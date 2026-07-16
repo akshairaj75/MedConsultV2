@@ -46,12 +46,12 @@ public class PrivacySetting {
     private Clinic clinic;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "data_scope", nullable = false, columnDefinition = "ENUM('full_record','lab_results','prescriptions','vitals','consultations','allergies')")
-    private DataScope dataScope = DataScope.full_record;
+    @Column(name = "data_scope", nullable = false)
+    private DataScope dataScope = DataScope.FULL_RECORD;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "permission", nullable = false, columnDefinition = "ENUM('allow','deny')")
-    private PrivacyPermission permission = PrivacyPermission.allow;
+    @Column(name = "permission", nullable = false)
+    private PrivacyPermission permission = PrivacyPermission.ALLOW;
 
     @Column(name = "granted_at", nullable = false)
     private LocalDateTime grantedAt = LocalDateTime.now();

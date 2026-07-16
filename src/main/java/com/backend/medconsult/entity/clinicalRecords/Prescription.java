@@ -59,8 +59,8 @@ public class Prescription {
     private LocalDate validUntil;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, columnDefinition = "ENUM('active','dispensed','expired','cancelled')")
-    private PrescriptionStatus status = PrescriptionStatus.active;
+    @Column(name = "status", nullable = false)
+    private PrescriptionStatus status = PrescriptionStatus.ACTIVE;
 
     @Column(name = "diagnosis_notes", columnDefinition = "TEXT")
     private String diagnosisNotes;

@@ -51,8 +51,8 @@ public class LabItem {
     private BigDecimal referenceHigh;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "flag", nullable = false, columnDefinition = "ENUM('normal','high','low','critical_high','critical_low','abnormal')")
-    private LabItemFlag flag = LabItemFlag.normal;
+    @Column(name = "flag", nullable = false)
+    private LabItemFlag flag = LabItemFlag.NORMAL;
 
     @Column(name = "sort_order", nullable = false)
     private Short sortOrder = 0;

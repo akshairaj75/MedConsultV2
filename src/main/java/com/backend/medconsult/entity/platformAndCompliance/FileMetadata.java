@@ -55,8 +55,8 @@ public class FileMetadata {
     private Long sizeBytes = 0L;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "category", nullable = false, columnDefinition = "ENUM('lab_report','scan','prescription','chat_attachment','profile_photo','other')")
-    private FileCategory category = FileCategory.other;
+    @Column(name = "category", nullable = false)
+    private FileCategory category = FileCategory.OTHER;
 
     @Column(name = "is_encrypted", nullable = false)
     private Boolean isEncrypted = true;

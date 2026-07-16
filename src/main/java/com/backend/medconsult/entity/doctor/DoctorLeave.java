@@ -34,8 +34,8 @@ public class DoctorLeave {
     private DoctorClinic doctorClinic;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "leave_type", nullable = false, columnDefinition = "ENUM('annual','sick','conference','emergency','other')")
-    private LeaveType leaveType = LeaveType.other;
+    @Column(name = "leave_type", nullable = false)
+    private LeaveType leaveType = LeaveType.OTHER;
 
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;

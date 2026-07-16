@@ -43,11 +43,11 @@ public class PatientHealthProfile {
     private BigDecimal bmi;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "smoking_status", columnDefinition = "ENUM('never','former','current')")
+    @Column(name = "smoking_status")
     private SmokingStatus smokingStatus;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "alcohol_status", columnDefinition = "ENUM('none','occasional','regular')")
+    @Column(name = "alcohol_status")
     private AlcoholStatus alcoholStatus;
 
     @Column(name = "surgical_history", columnDefinition = "TEXT")

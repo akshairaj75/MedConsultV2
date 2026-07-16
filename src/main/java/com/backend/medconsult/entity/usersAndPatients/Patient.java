@@ -49,7 +49,7 @@ public class Patient {
     private String nationality;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "marital_status", columnDefinition = "ENUM('single','married','divorced','widowed')")
+    @Column(name = "marital_status")
     private MaritalStatus maritalStatus;
 
     @Column(name = "emergency_contact_name", length = 150)

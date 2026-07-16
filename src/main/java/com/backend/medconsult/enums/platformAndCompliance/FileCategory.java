@@ -1,10 +1,10 @@
 package com.backend.medconsult.enums.platformAndCompliance;
 
 public enum FileCategory {
-    lab_report,
-    scan,
-    prescription,
-    chat_attachment,
-    profile_photo,
-    other
+    LAB_REPORT,
+    SCAN,
+    PRESCRIPTION,
+    CHAT_ATTACHMENT,
+    PROFILE_PHOTO,
+    OTHER
 }

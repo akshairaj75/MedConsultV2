@@ -1,7 +1,7 @@
 package com.backend.medconsult.enums.usersAndPatients;
 
 public enum Gender {
-    male,
-    female,
-    prefer_not_to_say
+    MALE,
+    FEMALE,
+    PREFER_NOT_TO_SAY
 }

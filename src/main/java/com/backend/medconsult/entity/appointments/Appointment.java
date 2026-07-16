@@ -55,8 +55,8 @@ public class Appointment {
     private Consultation consultation;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "appointment_type", nullable = false, columnDefinition = "ENUM('follow_up','new_patient','referral','emergency')")
-    private AppointmentType appointmentType = AppointmentType.new_patient;
+    @Column(name = "appointment_type", nullable = false)
+    private AppointmentType appointmentType = AppointmentType.NEW_PATIENT;
 
     @Column(name = "scheduled_date", nullable = false)
     private LocalDate scheduledDate;
@@ -68,12 +68,12 @@ public class Appointment {
     private Short durationMinutes = 30;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "session_type", nullable = false, columnDefinition = "ENUM('in_clinic','virtual')")
-    private SessionType sessionType = SessionType.in_clinic;
+    @Column(name = "session_type", nullable = false)
+    private SessionType sessionType = SessionType.IN_CLINIC;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, columnDefinition = "ENUM('scheduled','confirmed','completed','cancelled','no_show')")
-    private AppointmentStatus status = AppointmentStatus.scheduled;
+    @Column(name = "status", nullable = false)
+    private AppointmentStatus status = AppointmentStatus.SCHEDULED;
 
     @Column(name = "reason", columnDefinition = "TEXT")
     private String reason;

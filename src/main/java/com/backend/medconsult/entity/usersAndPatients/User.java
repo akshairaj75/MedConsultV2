@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import com.backend.medconsult.enums.usersAndPatients.*;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -39,18 +40,25 @@ public class User {
     @Column(name = "phone", length = 20)
     private String phone;
 
-    @Column(name = "password_hash", nullable = false)
+    @Column(name = "password_hash", length = 512)
     private String passwordHash;
+
+    @Column(name = "provider_id", length = 255)       //recently added for social login
+    private String providerId;
+
+    @Enumerated(EnumType.STRING)                      //recently added for social login
+    @Column(name = "auth_provider", nullable = false)
+    private AuthProvider authProvider = AuthProvider.LOCAL;
 
     @Column(name = "full_name", nullable = false, length = 150)
     private String fullName;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false, columnDefinition = "ENUM('patient','doctor','clinic_admin','system_admin')")
-    private UserRole role = UserRole.patient;
+    @Column(name = "role", nullable = false)
+    private UserRole role = UserRole.PATIENT;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "gender", columnDefinition = "ENUM('male','female','prefer_not_to_say')")
+    @Column(name = "gender")
     private Gender gender;
 
     @Column(name = "preferred_lang", nullable = false, length = 5, columnDefinition = "CHAR(5)")
@@ -118,6 +126,23 @@ public class User {
 
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
+    }
+
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
+
+    public AuthProvider getAuthProvider() {
+        return authProvider;
+    }
+
+    public void setAuthProvider(AuthProvider authProvider) {
+        this.authProvider = authProvider;
     }
 
     public String getFullName() {

@@ -1,11 +1,11 @@
 package com.backend.medconsult.enums.platformAndCompliance;
 
 public enum NotificationType {
-    appointment_confirmed,
-    appointment_reminder_24h,
-    appointment_reminder_2h,
-    appointment_cancelled,
-    new_message,
-    lab_result_uploaded,
-    prescription_issued
+    APPOINTMENT_CONFIRMED,
+    APPOINTMENT_REMINDER_24H,
+    APPOINTMENT_REMINDER_2H,
+    APPOINTMENT_CANCELLED,
+    NEW_MESSAGE,
+    LAB_RESULT_UPLOADED,
+    PRESCRIPTION_ISSUED
 }

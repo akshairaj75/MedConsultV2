@@ -32,7 +32,7 @@ public class AccessLog {
     private Patient patient;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "action", nullable = false, columnDefinition = "ENUM('view','create','update','delete','export','share','login','logout')")
+    @Column(name = "action", nullable = false)
     private AuditAction action;
 
     @Column(name = "resource_type", nullable = false, length = 60)
@@ -51,8 +51,8 @@ public class AccessLog {
     private String requestId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "outcome", nullable = false, columnDefinition = "ENUM('success','denied','error')")
-    private AuditOutcome outcome = AuditOutcome.success;
+    @Column(name = "outcome", nullable = false)
+    private AuditOutcome outcome = AuditOutcome.SUCCESS;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

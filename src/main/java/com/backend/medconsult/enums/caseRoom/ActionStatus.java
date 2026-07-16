@@ -1,7 +1,7 @@
 package com.backend.medconsult.enums.caseRoom;
 
 public enum ActionStatus {
-    pending,
-    done,
-    cancelled
+    PENDING,
+    DONE,
+    CANCELLED
 }

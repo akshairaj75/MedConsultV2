@@ -44,12 +44,12 @@ public class CaseRoom {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, columnDefinition = "ENUM('active','pending_review','resolved','archived')")
-    private CaseRoomStatus status = CaseRoomStatus.active;
+    @Column(name = "status", nullable = false)
+    private CaseRoomStatus status = CaseRoomStatus.ACTIVE;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "priority", nullable = false, columnDefinition = "ENUM('routine','urgent','critical')")
-    private CasePriority priority = CasePriority.routine;
+    @Column(name = "priority", nullable = false)
+    private CasePriority priority = CasePriority.ROUTINE;
 
     @Column(name = "closed_at")
     private LocalDateTime closedAt;

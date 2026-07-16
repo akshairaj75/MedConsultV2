@@ -42,8 +42,8 @@ public class CaseRoomMember {
     private Doctor doctor;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false, columnDefinition = "ENUM('owner','contributor','observer')")
-    private MemberRole role = MemberRole.contributor;
+    @Column(name = "role", nullable = false)
+    private MemberRole role = MemberRole.CONTRIBUTOR;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "invited_by", foreignKey = @ForeignKey(name = "fk_case_room_members_inviter"))

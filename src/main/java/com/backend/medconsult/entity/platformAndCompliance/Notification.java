@@ -35,7 +35,7 @@ public class Notification {
     private User user;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false, columnDefinition = "ENUM('appointment_confirmed','appointment_reminder_24h','appointment_reminder_2h','appointment_cancelled','new_message','lab_result_uploaded','prescription_issued')")
+    @Column(name = "type", nullable = false)
     private NotificationType type;
 
     @Column(name = "title", nullable = false, length = 255)
@@ -51,7 +51,7 @@ public class Notification {
     private String refId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "channel", nullable = false, columnDefinition = "ENUM('push','sms','email','in_app')")
+    @Column(name = "channel", nullable = false)
     private NotificationChannel channel;
 
     @Column(name = "is_read", nullable = false)

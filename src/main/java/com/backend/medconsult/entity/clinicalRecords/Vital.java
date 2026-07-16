@@ -45,8 +45,8 @@ public class Vital {
     private LocalDateTime recordedAt = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "source", nullable = false, columnDefinition = "ENUM('patient_app','doctor_entry','device_sync','naphies')")
-    private VitalSource source = VitalSource.patient_app;
+    @Column(name = "source", nullable = false)
+    private VitalSource source = VitalSource.PATIENT_APP;
 
     @Column(name = "blood_pressure_systolic")
     private Short bloodPressureSystolic;

@@ -53,12 +53,12 @@ public class LabResult {
     private LocalDate reportDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, columnDefinition = "ENUM('pending','received','reviewed','abnormal','critical')")
-    private LabResultStatus status = LabResultStatus.pending;
+    @Column(name = "status", nullable = false)
+    private LabResultStatus status = LabResultStatus.PENDING;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "overall_flag", nullable = false, columnDefinition = "ENUM('normal','abnormal','critical')")
-    private ResultFlag overallFlag = ResultFlag.normal;
+    @Column(name = "overall_flag", nullable = false)
+    private ResultFlag overallFlag = ResultFlag.NORMAL;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)

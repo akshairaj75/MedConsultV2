@@ -54,12 +54,12 @@ public class AppointmentSlot {
     private LocalTime endTime;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "session_type", nullable = false, columnDefinition = "ENUM('in_clinic','virtual')")
-    private SessionType sessionType = SessionType.in_clinic;
+    @Column(name = "session_type", nullable = false)
+    private SessionType sessionType = SessionType.IN_CLINIC;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, columnDefinition = "ENUM('available','booked','blocked','no_show')")
-    private SlotStatus status = SlotStatus.available;
+    @Column(name = "status", nullable = false)
+    private SlotStatus status = SlotStatus.AVAILABLE;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)

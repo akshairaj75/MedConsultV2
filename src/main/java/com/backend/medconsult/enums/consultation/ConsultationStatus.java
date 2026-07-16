@@ -1,8 +1,8 @@
 package com.backend.medconsult.enums.consultation;
 
 public enum ConsultationStatus {
-    open,
-    in_progress,
-    closed,
-    archived
+    OPEN,
+    IN_PROGRESS,
+    CLOSED,
+    ARCHIVED
 }

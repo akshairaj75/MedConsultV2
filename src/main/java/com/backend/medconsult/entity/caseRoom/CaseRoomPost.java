@@ -42,8 +42,8 @@ public class CaseRoomPost {
     private Doctor author;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "post_type", nullable = false, columnDefinition = "ENUM('note','action_item','file','system_event')")
-    private PostType postType = PostType.note;
+    @Column(name = "post_type", nullable = false)
+    private PostType postType = PostType.NOTE;
 
     @Column(name = "body", columnDefinition = "TEXT")
     private String body;
@@ -61,7 +61,7 @@ public class CaseRoomPost {
     private LocalDate actionDueDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "action_status", columnDefinition = "ENUM('pending','done','cancelled')")
+    @Column(name = "action_status")
     private ActionStatus actionStatus;
 
     @Column(name = "tags", columnDefinition = "json")

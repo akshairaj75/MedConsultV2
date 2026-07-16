@@ -50,8 +50,8 @@ public class DoctorSchedule {
     private Short maxPatients;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "session_type", nullable = false, columnDefinition = "ENUM('in_clinic','virtual','both')")
-    private SessionType sessionType = SessionType.in_clinic;
+    @Column(name = "session_type", nullable = false)
+    private SessionType sessionType = SessionType.IN_CLINIC;
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;

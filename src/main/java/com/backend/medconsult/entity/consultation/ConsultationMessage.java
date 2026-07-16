@@ -47,8 +47,8 @@ public class ConsultationMessage {
     private User sender;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "message_type", nullable = false, columnDefinition = "ENUM('text','file','prescription','lab_result','system_event')")
-    private MessageType messageType = MessageType.text;
+    @Column(name = "message_type", nullable = false)
+    private MessageType messageType = MessageType.TEXT;
 
     @Column(name = "body", columnDefinition = "TEXT")
     private String body;

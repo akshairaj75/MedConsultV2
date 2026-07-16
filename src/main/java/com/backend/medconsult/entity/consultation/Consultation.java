@@ -51,8 +51,8 @@ public class Consultation {
     private String subject;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, columnDefinition = "ENUM('open','in_progress','closed','archived')")
-    private ConsultationStatus status = ConsultationStatus.open;
+    @Column(name = "status", nullable = false)
+    private ConsultationStatus status = ConsultationStatus.OPEN;
 
     @Column(name = "is_urgent", nullable = false)
     private Boolean isUrgent = false;

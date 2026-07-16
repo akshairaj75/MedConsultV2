@@ -1,8 +1,8 @@
 package com.backend.medconsult.enums.caseRoom;
 
 public enum PostType {
-    note,
-    action_item,
-    file,
-    system_event
+    NOTE,
+    ACTION_ITEM,
+    FILE,
+    SYSTEM_EVENT
 }

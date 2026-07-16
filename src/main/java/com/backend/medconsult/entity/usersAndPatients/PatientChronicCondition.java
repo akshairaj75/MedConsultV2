@@ -45,8 +45,8 @@ public class PatientChronicCondition {
     private LocalDate diagnosisDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, columnDefinition = "ENUM('active','resolved','in_remission')")
-    private ConditionStatus status = ConditionStatus.active;
+    @Column(name = "status", nullable = false)
+    private ConditionStatus status = ConditionStatus.ACTIVE;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.SET_NULL)

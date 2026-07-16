@@ -1,8 +1,8 @@
 package com.backend.medconsult.enums.caseRoom;
 
 public enum CaseRoomStatus {
-    active,
-    pending_review,
-    resolved,
-    archived
+    ACTIVE,
+    PENDING_REVIEW,
+    RESOLVED,
+    ARCHIVED
 }

@@ -36,15 +36,15 @@ public class PatientAllergy {
     private String allergen;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "allergy_type", nullable = false, columnDefinition = "ENUM('drug','food','environmental','other')")
-    private AllergyType allergyType = AllergyType.other;
+    @Column(name = "allergy_type", nullable = false)
+    private AllergyType allergyType = AllergyType.OTHER;
 
     @Column(name = "reaction", length = 255)
     private String reaction;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "severity", nullable = false, columnDefinition = "ENUM('mild','moderate','severe')")
-    private Severity severity = Severity.moderate;
+    @Column(name = "severity", nullable = false)
+    private Severity severity = Severity.MODERATE;
 
     @Column(name = "confirmed", nullable = false)
     private Boolean confirmed = false;
