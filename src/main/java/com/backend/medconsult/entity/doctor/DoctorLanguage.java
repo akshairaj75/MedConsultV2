@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import java.util.UUID;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
@@ -30,10 +32,12 @@ public class DoctorLanguage {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "doctor_id", nullable = false, foreignKey = @ForeignKey(name = "fk_doctor_languages_doctor"))
     private Doctor doctor;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "language_id", nullable = false, foreignKey = @ForeignKey(name = "fk_doctor_languages_language"))
     private Language language;
 

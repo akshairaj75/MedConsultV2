@@ -9,6 +9,8 @@ import com.backend.medconsult.enums.platformAndCompliance.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
@@ -30,10 +32,12 @@ public class PrivacySetting {
     private UUID settingId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "patient_id", nullable = false, foreignKey = @ForeignKey(name = "fk_privacy_settings_patient"))
     private Patient patient;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "doctor_id", foreignKey = @ForeignKey(name = "fk_privacy_settings_doctor"))
     private Doctor doctor;
 

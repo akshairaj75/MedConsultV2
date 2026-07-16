@@ -6,6 +6,8 @@ import com.backend.medconsult.enums.clinicalRecords.*;
 import java.math.BigDecimal;
 import java.util.UUID;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
@@ -26,6 +28,7 @@ public class LabItem {
     private UUID itemId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "lab_result_id", nullable = false, foreignKey = @ForeignKey(name = "fk_lab_items_result"))
     private LabResult labResult;
 

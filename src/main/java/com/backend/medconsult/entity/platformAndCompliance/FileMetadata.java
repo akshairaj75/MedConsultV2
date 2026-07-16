@@ -10,6 +10,8 @@ import com.backend.medconsult.enums.platformAndCompliance.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
@@ -36,6 +38,7 @@ public class FileMetadata {
     private UUID fileId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "uploaded_by", nullable = false, foreignKey = @ForeignKey(name = "fk_files_uploader"))
     private User uploadedBy;
 
@@ -62,6 +65,7 @@ public class FileMetadata {
     private String checksumSha256;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "patient_id", foreignKey = @ForeignKey(name = "fk_files_patient"))
     private Patient patient;
 

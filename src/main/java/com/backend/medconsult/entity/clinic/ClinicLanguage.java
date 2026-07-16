@@ -3,6 +3,8 @@ package com.backend.medconsult.entity.clinic;
 import jakarta.persistence.*;
 import java.util.UUID;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
@@ -25,10 +27,12 @@ public class ClinicLanguage {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "clinic_id", nullable = false, foreignKey = @ForeignKey(name = "fk_clinic_languages_clinic"))
     private Clinic clinic;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "language_id", nullable = false, foreignKey = @ForeignKey(name = "fk_clinic_languages_language"))
     private Language language;
 

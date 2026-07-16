@@ -28,6 +28,7 @@ public class PatientAllergy {
     private UUID allergyId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "patient_id", nullable = false, foreignKey = @ForeignKey(name = "fk_patient_allergies_patient"))
     private Patient patient;
 
@@ -49,8 +50,8 @@ public class PatientAllergy {
     private Boolean confirmed = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "recorded_by", foreignKey = @ForeignKey(name = "fk_patient_allergies_recorder"))
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private User recordedBy;
 
     @Column(name = "created_at", nullable = false, updatable = false)

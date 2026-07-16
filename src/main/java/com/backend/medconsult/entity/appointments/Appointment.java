@@ -13,6 +13,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(
@@ -34,14 +36,17 @@ public class Appointment {
     private String appointmentId = UUID.randomUUID().toString();
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "patient_id", nullable = false, foreignKey = @ForeignKey(name = "fk_appointments_patient"))
     private Patient patient;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "dc_id", nullable = false, foreignKey = @ForeignKey(name = "fk_appointments_dc"))
     private DoctorClinic doctorClinic;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "slot_id", nullable = false, foreignKey = @ForeignKey(name = "fk_appointments_slot"))
     private AppointmentSlot slot;
 
@@ -80,6 +85,7 @@ public class Appointment {
     private Boolean reminder2hSent = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "cancelled_by", foreignKey = @ForeignKey(name = "fk_appointments_canceller"))
     private User cancelledBy;
 

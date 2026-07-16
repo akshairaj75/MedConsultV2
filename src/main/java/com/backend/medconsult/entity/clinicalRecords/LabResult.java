@@ -10,6 +10,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
@@ -32,10 +34,12 @@ public class LabResult {
     private UUID labResultId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "patient_id", nullable = false, foreignKey = @ForeignKey(name = "fk_lab_results_patient"))
     private Patient patient;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "ordered_by", foreignKey = @ForeignKey(name = "fk_lab_results_orderer"))
     private Doctor orderedBy;
 
@@ -57,6 +61,7 @@ public class LabResult {
     private ResultFlag overallFlag = ResultFlag.normal;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "file_id", foreignKey = @ForeignKey(name = "fk_lab_results_file"))
     private FileMetadata file;
 

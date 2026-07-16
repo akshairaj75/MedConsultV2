@@ -12,6 +12,8 @@ import com.backend.medconsult.enums.consultation.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
@@ -35,10 +37,12 @@ public class ConsultationMessage {
     private UUID messageId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "consultation_id", nullable = false, foreignKey = @ForeignKey(name = "fk_consultation_messages_consultation"))
     private Consultation consultation;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "sender_id", nullable = false, foreignKey = @ForeignKey(name = "fk_consultation_messages_sender"))
     private User sender;
 
@@ -50,6 +54,7 @@ public class ConsultationMessage {
     private String body;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "file_id", foreignKey = @ForeignKey(name = "fk_consultation_messages_file"))
     private FileMetadata file;
 
