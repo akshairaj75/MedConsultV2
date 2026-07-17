@@ -3,8 +3,6 @@ package com.backend.medconsult.service.references;
 import java.util.List;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
-
 import com.backend.medconsult.dto.references.CityRequestDto;
 import com.backend.medconsult.dto.references.CityResponseDto;
 import com.backend.medconsult.dto.references.LocalityRequestDto;

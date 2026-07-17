@@ -13,12 +13,16 @@ import com.backend.medconsult.dto.auth.RegisterRequestDto;
 import com.backend.medconsult.dto.auth.UserLoginDto;
 import com.backend.medconsult.dto.auth.UserResponseDto;
 import com.backend.medconsult.entity.usersAndPatients.User;
+import com.backend.medconsult.enums.platformAndCompliance.AuditAction;
+import com.backend.medconsult.enums.platformAndCompliance.AuditOutcome;
+import com.backend.medconsult.enums.platformAndCompliance.ResourceType;
 import com.backend.medconsult.enums.usersAndPatients.AuthProvider;
 import com.backend.medconsult.repository.references.SubSpecialtyRepository;
 import com.backend.medconsult.repository.usersAndPatients.UserRepository;
 import com.backend.medconsult.security.CustomUserPrincipal;
 import com.backend.medconsult.security.JwtService;
 import com.backend.medconsult.service.UserService;
+import com.backend.medconsult.service.platformAndCompliance.AccessLogService;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -31,6 +35,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     SubSpecialtyRepository subSpecialtyRepository;
+
+    @Autowired
+    AccessLogService accessLogService;
 
     @Autowired
     JwtService jwtService;
@@ -82,6 +89,14 @@ public class UserServiceImpl implements UserService {
         }
 
         String token = jwtService.generateToken(user);
+
+        accessLogService.log(
+                user,
+                null,
+                AuditAction.LOGIN,
+                ResourceType.AUTH,
+                null,
+                AuditOutcome.SUCCESS);
 
         return AuthResponseDto.fromEntity(user, token);
 

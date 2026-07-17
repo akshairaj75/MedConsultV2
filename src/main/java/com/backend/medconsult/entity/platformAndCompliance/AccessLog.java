@@ -8,14 +8,11 @@ import com.backend.medconsult.enums.platformAndCompliance.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(
-    name = "access_logs",
-    indexes = {
+@Table(name = "access_logs", indexes = {
         @Index(name = "idx_audit_patient", columnList = "patient_id, created_at DESC"),
         @Index(name = "idx_audit_user", columnList = "user_id, created_at DESC"),
         @Index(name = "idx_audit_resource", columnList = "resource_type, resource_id, created_at")
-    }
-)
+})
 public class AccessLog {
 
     @Id
@@ -35,8 +32,9 @@ public class AccessLog {
     @Column(name = "action", nullable = false)
     private AuditAction action;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "resource_type", nullable = false, length = 60)
-    private String resourceType;
+    private ResourceType resourceType;
 
     @Column(name = "resource_id", length = 36)
     private String resourceId;
@@ -92,11 +90,11 @@ public class AccessLog {
         this.action = action;
     }
 
-    public String getResourceType() {
+    public ResourceType getResourceType() {
         return resourceType;
     }
 
-    public void setResourceType(String resourceType) {
+    public void setResourceType(ResourceType resourceType) {
         this.resourceType = resourceType;
     }
 
