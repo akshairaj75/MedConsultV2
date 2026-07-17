@@ -72,7 +72,13 @@ public class SecurityConfig {
                                                 SessionCreationPolicy.STATELESS))
 
                                 .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/api/medconsult/auth/**", "/api/oauth2/**", "/uploads/**",
+                                                .requestMatchers(
+                                                                "/api/medconsult/auth/**",
+                                                                "/api/oauth2/**",
+                                                                "/uploads/**",
+                                                                "/swagger-ui/**",
+                                                                "/swagger-ui.html",
+                                                                "/v3/api-docs/**",
                                                                 "/ws/**")
                                                 .permitAll()
                                                 .requestMatchers("/api/chat/**")

@@ -1,15 +1,22 @@
 package com.backend.medconsult.serviceImpl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.medconsult.dto.auth.AuthResponseDto;
 import com.backend.medconsult.dto.auth.RegisterRequestDto;
 import com.backend.medconsult.dto.auth.UserLoginDto;
+import com.backend.medconsult.dto.auth.UserResponseDto;
 import com.backend.medconsult.entity.usersAndPatients.User;
 import com.backend.medconsult.enums.usersAndPatients.AuthProvider;
+import com.backend.medconsult.repository.references.SubSpecialtyRepository;
 import com.backend.medconsult.repository.usersAndPatients.UserRepository;
+import com.backend.medconsult.security.CustomUserPrincipal;
 import com.backend.medconsult.security.JwtService;
 import com.backend.medconsult.service.UserService;
 
@@ -23,8 +30,12 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
 
     @Autowired
+    SubSpecialtyRepository subSpecialtyRepository;
+
+    @Autowired
     JwtService jwtService;
 
+    @Transactional
     public AuthResponseDto register(RegisterRequestDto dto) {
         User user = new User();
         user.setFullName(dto.getFullName());
@@ -51,7 +62,7 @@ public class UserServiceImpl implements UserService {
         return AuthResponseDto.fromEntity(savedUser, token);
     }
 
-     @Override
+    @Override
     public AuthResponseDto login(UserLoginDto dto) {
         User user = userRepository.findByEmail(
                 dto.getEmail()).orElseThrow();
@@ -75,5 +86,21 @@ public class UserServiceImpl implements UserService {
         return AuthResponseDto.fromEntity(user, token);
 
     }
+
+    @Override
+    public List<UserResponseDto> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream().map(UserResponseDto::fromEntity).collect(Collectors.toList());
+    }
+
+    @Override
+    public UserResponseDto getMe(CustomUserPrincipal userPrincipal) {
+        User user = userPrincipal.getUser();
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        return UserResponseDto.fromEntity(user);
+    }
+
 
 }

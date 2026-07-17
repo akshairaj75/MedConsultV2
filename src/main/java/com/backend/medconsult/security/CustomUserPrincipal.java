@@ -45,8 +45,10 @@ public class CustomUserPrincipal implements UserDetails {
             role = "ROLE_PATIENT";
         } else if (role.equals("DOCTOR")) {
             role = "ROLE_DOCTOR";
-        } else {
-            role = "ROLE_ADMIN";
+        } else if (role.equals("CLINIC_ADMIN")) {
+            role = "ROLE_CLINIC_ADMIN";
+        } else if (role.equals("SYSTEM_ADMIN")) {
+            role = "ROLE_SYSTEM_ADMIN";
         }
         return Collections.singleton(new SimpleGrantedAuthority(role));
     }
