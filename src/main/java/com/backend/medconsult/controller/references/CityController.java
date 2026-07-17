@@ -1,4 +1,4 @@
-package com.backend.medconsult.controller;
+package com.backend.medconsult.controller.references;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ import com.backend.medconsult.dto.references.CityResponseDto;
 import com.backend.medconsult.dto.references.LocalityRequestDto;
 import com.backend.medconsult.dto.references.LocalityResponseDto;
 import com.backend.medconsult.security.CustomUserPrincipal;
-import com.backend.medconsult.service.CityService;
+import com.backend.medconsult.service.references.CityService;
 
 import jakarta.servlet.http.HttpServletRequest;
 

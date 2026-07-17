@@ -1,0 +1,59 @@
+package com.backend.medconsult.service;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
+
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+@Service
+public class FileStorageService {
+
+    @Value("${file.upload-dir}")
+    private String uploadDir;
+
+    @Value("${file.base-url}")
+    private String baseUrl;
+    // private final String uploadDir = "uploads/";
+
+    public String storeFile(MultipartFile file, String folder) throws IOException {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("File is empty");
+        }
+
+        Path uploadPath = Paths.get(uploadDir, folder);
+
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+
+        Files.copy(file.getInputStream(),
+                uploadPath.resolve(fileName),
+                StandardCopyOption.REPLACE_EXISTING);
+        return uploadDir + folder + "/" + fileName;
+
+    }
+
+    public void deleteFile(String fileUrl) {
+        try {
+            Path filePath = Paths.get(fileUrl);
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not delete file: " + fileUrl, e);
+        }
+        
+       }
+
+    // public String storeCategoryFiled(MultipartFile file) throws IOException {
+    // return storeFile(file, "categories");
+    // }
+
+}

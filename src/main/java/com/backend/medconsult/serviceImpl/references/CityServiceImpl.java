@@ -1,4 +1,4 @@
-package com.backend.medconsult.serviceImpl;
+package com.backend.medconsult.serviceImpl.references;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,7 +18,7 @@ import com.backend.medconsult.entity.references.Locality;
 import com.backend.medconsult.repository.references.CityRepository;
 import com.backend.medconsult.repository.references.LocalityRepository;
 import com.backend.medconsult.security.CustomUserPrincipal;
-import com.backend.medconsult.service.CityService;
+import com.backend.medconsult.service.references.CityService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -123,6 +123,7 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
+    @Transactional
     public LocalityResponseDto updateLocality(UUID localityId, LocalityRequestDto dto, CustomUserPrincipal authUser,
             HttpServletRequest request) {
 
@@ -154,6 +155,7 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
+    @Transactional
     public String deleteLocality(UUID localityId, CustomUserPrincipal authUser, HttpServletRequest request) {
         Locality locality = localityRepository.findById(localityId).get();
         localityRepository.delete(locality);

@@ -1,4 +1,4 @@
-package com.backend.medconsult.serviceImpl;
+package com.backend.medconsult.serviceImpl.references;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +16,7 @@ import com.backend.medconsult.entity.references.SubSpecialty;
 import com.backend.medconsult.repository.references.SpecialtyRepository;
 import com.backend.medconsult.repository.references.SubSpecialtyRepository;
 import com.backend.medconsult.security.CustomUserPrincipal;
-import com.backend.medconsult.service.SpecialtyService;
+import com.backend.medconsult.service.references.SpecialtyService;
 
 import jakarta.servlet.http.HttpServletRequest;
 

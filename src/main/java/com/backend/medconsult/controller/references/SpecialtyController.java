@@ -1,4 +1,4 @@
-package com.backend.medconsult.controller;
+package com.backend.medconsult.controller.references;
 
 import java.beans.Customizer;
 import java.util.List;
@@ -23,8 +23,7 @@ import com.backend.medconsult.dto.references.SpecialtyResponseDto;
 import com.backend.medconsult.dto.references.SubSpecialtyRequestDto;
 import com.backend.medconsult.dto.references.SubSpecialtyResponseDto;
 import com.backend.medconsult.security.CustomUserPrincipal;
-import com.backend.medconsult.service.SpecialtyService;
-
+import com.backend.medconsult.service.references.SpecialtyService;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController

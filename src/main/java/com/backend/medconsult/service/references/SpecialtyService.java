@@ -1,4 +1,4 @@
-package com.backend.medconsult.service;
+package com.backend.medconsult.service.references;
 
 import java.util.List;
 import java.util.UUID;
