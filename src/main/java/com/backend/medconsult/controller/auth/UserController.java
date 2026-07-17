@@ -1,4 +1,4 @@
-package com.backend.medconsult.controller;
+package com.backend.medconsult.controller.auth;
 
 import java.util.List;
 

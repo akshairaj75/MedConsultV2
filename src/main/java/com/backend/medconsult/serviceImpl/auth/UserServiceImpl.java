@@ -1,4 +1,4 @@
-package com.backend.medconsult.serviceImpl;
+package com.backend.medconsult.serviceImpl.auth;
 
 import java.util.List;
 import java.util.stream.Collectors;
