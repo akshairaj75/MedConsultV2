@@ -79,7 +79,10 @@ public class SecurityConfig {
                                                                 "/swagger-ui/**",
                                                                 "/swagger-ui.html",
                                                                 "/v3/api-docs/**",
-                                                                "/ws/**")
+                                                                "/ws/**",
+                                                                "/api/clinics/*",
+                                                                "/api/clinics/*/branches",
+                                                                "/api/branches/*/hours")
                                                 .permitAll()
                                                 .requestMatchers("/api/chat/**")
                                                 .authenticated()
