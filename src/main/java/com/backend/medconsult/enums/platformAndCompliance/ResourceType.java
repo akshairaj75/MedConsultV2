@@ -18,6 +18,7 @@ public enum ResourceType {
     PRESCRIPTION_ITEM,
     VITAL,
     FILE,
+    ALLERGIES,
     DOCTOR_REVIEW,
     CLINIC_REVIEW,
     PRIVACY_SETTING,
