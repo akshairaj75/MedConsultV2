@@ -10,6 +10,7 @@ public class DoctorResponseDto {
 
     private UUID doctorId;
     private UUID userId;
+    private String fullName;
     private String mohRegistrationNumber;
     private Boolean mohVerified;
     private DoctorTitle title;
@@ -37,6 +38,14 @@ public class DoctorResponseDto {
 
     public void setUserId(UUID userId) {
         this.userId = userId;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getMohRegistrationNumber() {
@@ -143,6 +152,7 @@ public class DoctorResponseDto {
         dto.setDoctorId(doctor.getDoctorId());
         if (doctor.getUser() != null) {
             dto.setUserId(doctor.getUser().getUserId());
+            dto.setFullName(doctor.getUser().getFullName());
         }
         dto.setMohRegistrationNumber(doctor.getMohRegistrationNumber());
         dto.setMohVerified(doctor.getMohVerified());

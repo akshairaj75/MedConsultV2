@@ -103,7 +103,6 @@ public class ClinicServiceImpl implements ClinicService {
     public ClinicResponseDto createClinic(ClinicRequestDto dto, MultipartFile logo, CustomUserPrincipal principal) {
         Clinic clinic = new Clinic();
 
-        clinic.setClinicId(UUID.randomUUID());
         clinic.setNameEn(dto.getNameEn());
         clinic.setNameAr(dto.getNameAr());
         clinic.setDescriptionEn(dto.getDescriptionEn());
@@ -114,7 +113,6 @@ public class ClinicServiceImpl implements ClinicService {
         clinic.setPhonePrimary(dto.getPhonePrimary());
         clinic.setPhoneSecondary(dto.getPhoneSecondary());
         clinic.setMohLicenseNumber(dto.getMohLicenseNumber());
-        clinic.setMohVerified(dto.getMohVerified());
         clinic.setMohVerifiedAt(dto.getMohVerifiedAt());
         clinic.setNaphiesFacilityId(dto.getNaphiesFacilityId());
 

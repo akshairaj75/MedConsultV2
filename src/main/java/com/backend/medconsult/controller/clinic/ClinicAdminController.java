@@ -32,13 +32,13 @@ import com.backend.medconsult.security.CustomUserPrincipal;
 import com.backend.medconsult.service.clinic.ClinicService;
 
 @RestController
-@RequestMapping
+@RequestMapping("/api/medconsult/clinics")
 public class ClinicAdminController {
 
     @Autowired
     private ClinicService clinicService;
 
-    @PostMapping("/api/clinics")
+    @PostMapping("/add")
     @PreAuthorize("hasRole('CLINIC_ADMIN')")
     public ResponseEntity<ClinicResponseDto> createClinic(
             @RequestPart("body") ClinicRequestDto dto,
@@ -47,7 +47,7 @@ public class ClinicAdminController {
         return ResponseEntity.ok(clinicService.createClinic(dto, logo, principal));
     }
 
-    @PatchMapping("/api/clinics/{id}")
+    @PatchMapping("/{id}")
     @PreAuthorize("hasRole('CLINIC_ADMIN')")
     public ResponseEntity<ClinicResponseDto> updateClinic(
             @PathVariable UUID id,
@@ -57,7 +57,7 @@ public class ClinicAdminController {
         return ResponseEntity.ok(clinicService.updateClinic(id, dto,logo, principal));
     }
 
-    // @PatchMapping("/api/admin/clinics/{id}/verify")
+    // @PatchMapping("/admin/{id}/verify")
     // @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     // public ResponseEntity<ClinicResponseDto> verifyClinic(
     //         @PathVariable UUID id,
@@ -65,7 +65,7 @@ public class ClinicAdminController {
     //     return ResponseEntity.ok(clinicService.verifyClinic(id, principal));
     // }
 
-    @PostMapping("/api/clinics/{id}/branches")
+    @PostMapping("/{id}/branches")
     @PreAuthorize("hasRole('CLINIC_ADMIN')")
     public ResponseEntity<ClinicBranchResponseDto> createClinicBranch(
             @PathVariable UUID id,
@@ -74,7 +74,7 @@ public class ClinicAdminController {
         return ResponseEntity.ok(clinicService.createClinicBranch(id, dto, principal));
     }
 
-    @PatchMapping("/api/branches/{id}")
+    @PatchMapping("/branches/{id}")
     @PreAuthorize("hasRole('CLINIC_ADMIN')")
     public ResponseEntity<ClinicBranchResponseDto> updateClinicBranch(
             @PathVariable UUID id,
@@ -83,7 +83,7 @@ public class ClinicAdminController {
         return ResponseEntity.ok(clinicService.updateClinicBranch(id, dto, principal));
     }
 
-    @DeleteMapping("/api/branches/{id}")
+    @DeleteMapping("/branches/{id}")
     @PreAuthorize("hasRole('CLINIC_ADMIN')")
     public ResponseEntity<Void> deleteClinicBranch(
             @PathVariable UUID id,
@@ -92,7 +92,7 @@ public class ClinicAdminController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/api/branches/{id}/hours")
+    @PutMapping("/branches/{id}/hours")
     @PreAuthorize("hasRole('CLINIC_ADMIN')")
     public ResponseEntity<List<ClinicOperatingHourResponseDto>> updateBranchHours(
             @PathVariable UUID id,
@@ -101,7 +101,7 @@ public class ClinicAdminController {
         return ResponseEntity.ok(clinicService.updateBranchHours(id, dtos, principal));
     }
 
-    @PostMapping("/api/clinics/{id}/specialties/{specialtyId}")
+    @PostMapping("/{id}/specialties/{specialtyId}")
     @PreAuthorize("hasRole('CLINIC_ADMIN')")
     public ResponseEntity<ClinicSpecialtyResponseDto> addClinicSpecialty(
             @PathVariable UUID clinicId,
@@ -110,7 +110,7 @@ public class ClinicAdminController {
         return ResponseEntity.ok(clinicService.addClinicSpecialty(clinicId, specialtyId, principal));
     }
 
-    // @DeleteMapping("/api/clinics/{id}/specialties/{specialtyId}")
+    // @DeleteMapping("/{id}/specialties/{specialtyId}")
     // @PreAuthorize("hasRole('CLINIC_ADMIN')")
     // public ResponseEntity<Void> deleteClinicSpecialty(
     //         @PathVariable UUID id,
@@ -120,7 +120,7 @@ public class ClinicAdminController {
     //     return ResponseEntity.noContent().build();
     // }
 
-    @PostMapping("/api/clinics/{id}/insurance/{providerId}")
+    @PostMapping("/{id}/insurance/{providerId}")
     @PreAuthorize("hasRole('CLINIC_ADMIN')")
     public ResponseEntity<ClinicInsuranceResponseDto> addClinicInsurance(
             @PathVariable UUID id,
@@ -130,7 +130,7 @@ public class ClinicAdminController {
         return ResponseEntity.ok(clinicService.addClinicInsurance(id, providerId, dto, principal));
     }
 
-    // @DeleteMapping("/api/clinics/{id}/insurance/{providerId}")
+    // @DeleteMapping("/{id}/insurance/{providerId}")
     // @PreAuthorize("hasRole('CLINIC_ADMIN')")
     // public ResponseEntity<Void> deleteClinicInsurance(
     //         @PathVariable UUID id,
@@ -140,7 +140,7 @@ public class ClinicAdminController {
     //     return ResponseEntity.noContent().build();
     // }
 
-    @PostMapping("/api/clinics/{id}/languages/{languageId}")
+    @PostMapping("/{id}/languages/{languageId}")
     @PreAuthorize("hasRole('CLINIC_ADMIN')")
     public ResponseEntity<ClinicLanguageResponseDto> addClinicLanguage(
             @PathVariable UUID id,
@@ -149,7 +149,7 @@ public class ClinicAdminController {
         return ResponseEntity.ok(clinicService.addClinicLanguage(id, languageId, principal));
     }
 
-    // @DeleteMapping("/api/clinics/{id}/languages/{languageId}")
+    // @DeleteMapping("/{id}/languages/{languageId}")
     // @PreAuthorize("hasRole('CLINIC_ADMIN')")
     // public ResponseEntity<Void> deleteClinicLanguage(
     //         @PathVariable UUID id,

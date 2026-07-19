@@ -17,28 +17,28 @@ import com.backend.medconsult.dto.clinic.ClinicBranchResponseDto;
 import com.backend.medconsult.dto.clinic.ClinicOperatingHourResponseDto;
 
 @RestController
-@RequestMapping
+@RequestMapping("/api/medconsult/clinics")
 public class ClinicController {
 
     @Autowired
     private ClinicService clinicService;
 
-    @GetMapping("/api/medconsult/clinic/all")
+    @GetMapping("/all")
     public ResponseEntity<List<ClinicResponseDto>> getAllClinics() {
         return ResponseEntity.ok(clinicService.getAllClinics());
     }
 
-    @GetMapping("/api/clinics/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ClinicResponseDto> getClinicById(@PathVariable UUID id) {
         return ResponseEntity.ok(clinicService.getClinicById(id));
     }
 
-    @GetMapping("/api/clinics/{id}/branches")
+    @GetMapping("/{id}/branches")
     public ResponseEntity<List<ClinicBranchResponseDto>> getClinicBranches(@PathVariable UUID id) {
         return ResponseEntity.ok(clinicService.getClinicBranches(id));
     }
 
-    @GetMapping("/api/branches/{branchId}/hours")
+    @GetMapping("/branches/{branchId}/hours")
     public ResponseEntity<List<ClinicOperatingHourResponseDto>> getBranchHours(@PathVariable UUID branchId) {
         return ResponseEntity.ok(clinicService.getBranchHours(branchId));
     }
