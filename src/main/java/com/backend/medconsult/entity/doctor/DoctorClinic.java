@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.List;
+import java.util.ArrayList;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -67,6 +69,9 @@ public class DoctorClinic {
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
+
+    @OneToMany(mappedBy = "doctorClinic", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<AppointmentSlot> appointmentSlots = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -176,5 +181,13 @@ public class DoctorClinic {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<AppointmentSlot> getAppointmentSlots() {
+        return appointmentSlots;
+    }
+
+    public void setAppointmentSlots(List<AppointmentSlot> appointmentSlots) {
+        this.appointmentSlots = appointmentSlots;
     }
 }

@@ -13,4 +13,8 @@ import java.util.UUID;
 public interface DoctorRepository extends JpaRepository<Doctor, UUID> {
 
     Optional<Doctor> findByUser(User user);
+
+    boolean existsByMohRegistrationNumber(String moh);
+
+    boolean existsByUser(User user);
 }

@@ -275,8 +275,6 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public PatientAllergyResponseDto updateAllergy(CustomUserPrincipal principal, UUID allergyId,
             PatientAllergyRequestDto request) {
-        Patient patient = patientRepository.findByUser_UserId(principal.getUserId())
-                .orElseThrow(() -> new RuntimeException("Patient profile not found for this user"));
 
         PatientAllergy alr = patientAllergyRepository.findById(allergyId)
                 .orElseThrow(() -> new RuntimeException("Patient allergy not found for this user"));
@@ -303,8 +301,6 @@ public class PatientServiceImpl implements PatientService {
     @Transactional
     @Override
     public void deleteAllergy(CustomUserPrincipal principal, UUID allergyId) {
-        Patient patient = patientRepository.findByUser_UserId(principal.getUserId())
-                .orElseThrow(() -> new RuntimeException("Patient profile not found for this user"));
 
         PatientAllergy alr = patientAllergyRepository.findById(allergyId)
                 .orElseThrow(() -> new RuntimeException("Patient allergy not found for this user"));
@@ -353,8 +349,6 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public PatientChronicConditionResponseDto updateChronicCondition(CustomUserPrincipal principal,
             UUID chronicConditionId, PatientChronicConditionRequestDto request) {
-        Patient patient = patientRepository.findByUser_UserId(principal.getUserId())
-                .orElseThrow(() -> new RuntimeException("Patient profile not found for this user"));
 
         PatientChronicCondition chronicCondition = patientChronicConditionRepository.findById(chronicConditionId)
                 .orElseThrow(() -> new RuntimeException("Patient chronic condition not found for this user"));

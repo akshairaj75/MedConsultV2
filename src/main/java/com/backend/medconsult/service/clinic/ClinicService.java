@@ -3,7 +3,6 @@ package com.backend.medconsult.service.clinic;
 import java.util.List;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.backend.medconsult.dto.clinic.ClinicBranchRequestDto;
