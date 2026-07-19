@@ -9,6 +9,8 @@ import com.backend.medconsult.security.CustomUserPrincipal;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 
 public interface AppointmentService {
@@ -24,7 +26,7 @@ public interface AppointmentService {
     /**
      * Retrieve a single appointment by its ID.
      */
-    AppointmentResponseDto getAppointmentById(String appointmentId,
+    AppointmentResponseDto getAppointmentById(UUID appointmentId,
                                               CustomUserPrincipal authUser,
                                               HttpServletRequest request);
 
@@ -39,7 +41,7 @@ public interface AppointmentService {
      * Update the status of an appointment (CONFIRMED, COMPLETED, NO_SHOW).
      * Cancellation is handled by a dedicated endpoint.
      */
-    AppointmentResponseDto updateStatus(String appointmentId,
+    AppointmentResponseDto updateStatus(UUID appointmentId,
                                         UpdateAppointmentStatusRequest request,
                                         CustomUserPrincipal authUser,
                                         HttpServletRequest httpRequest);
@@ -47,7 +49,7 @@ public interface AppointmentService {
     /**
      * Cancel an appointment. Marks the slot as AVAILABLE again.
      */
-    AppointmentResponseDto cancelAppointment(String appointmentId,
+    AppointmentResponseDto cancelAppointment(UUID appointmentId,
                                              CancelAppointmentRequest cancelRequest,
                                              CustomUserPrincipal authUser,
                                              HttpServletRequest httpRequest);

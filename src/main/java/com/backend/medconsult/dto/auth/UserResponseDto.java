@@ -2,8 +2,6 @@ package com.backend.medconsult.dto.auth;
 
 import com.backend.medconsult.enums.usersAndPatients.UserRole;
 
-import java.security.PublicKey;
-
 import com.backend.medconsult.entity.usersAndPatients.User;
 import com.backend.medconsult.enums.usersAndPatients.Gender;
 

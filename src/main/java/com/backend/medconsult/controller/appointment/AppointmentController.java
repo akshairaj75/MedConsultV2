@@ -66,7 +66,7 @@ public class AppointmentController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<AppointmentResponseDto> getAppointmentById(
-            @PathVariable("id") String appointmentId,
+            @PathVariable("id") UUID appointmentId,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
 
@@ -100,7 +100,7 @@ public class AppointmentController {
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasAnyRole('DOCTOR', 'CLINIC_ADMIN', 'SYSTEM_ADMIN')")
     public ResponseEntity<AppointmentResponseDto> updateStatus(
-            @PathVariable("id") String appointmentId,
+            @PathVariable("id") UUID appointmentId,
             @Valid @RequestBody UpdateAppointmentStatusRequest statusRequest,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
@@ -118,7 +118,7 @@ public class AppointmentController {
      */
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<AppointmentResponseDto> cancelAppointment(
-            @PathVariable("id") String appointmentId,
+            @PathVariable("id") UUID appointmentId,
             @Valid @RequestBody CancelAppointmentRequest cancelRequest,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {

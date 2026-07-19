@@ -15,7 +15,7 @@ public class AppointmentSlotRequestDto {
     private LocalTime endTime;
     private SessionType sessionType;
     private SlotStatus status;
-    private String appointmentId;
+    private UUID appointmentId;
 
     public UUID getDcId() {
         return dcId;
@@ -73,11 +73,11 @@ public class AppointmentSlotRequestDto {
         this.status = status;
     }
 
-    public String getAppointmentId() {
+    public UUID getAppointmentId() {
         return appointmentId;
     }
 
-    public void setAppointmentId(String appointmentId) {
+    public void setAppointmentId(UUID appointmentId) {
         this.appointmentId = appointmentId;
     }
 }

@@ -13,8 +13,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
+
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(
@@ -32,8 +36,11 @@ import org.hibernate.annotations.OnDeleteAction;
 public class Appointment {
 
     @Id
+    @GeneratedValue
+    @UuidGenerator
+    @JdbcTypeCode(SqlTypes.CHAR)
     @Column(name = "appointment_id", length = 36, columnDefinition = "CHAR(36)")
-    private String appointmentId = UUID.randomUUID().toString();
+    private UUID appointmentId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -106,11 +113,11 @@ public class Appointment {
     public Appointment() {
     }
 
-    public String getAppointmentId() {
+    public UUID getAppointmentId() {
         return appointmentId;
     }
 
-    public void setAppointmentId(String appointmentId) {
+    public void setAppointmentId(UUID appointmentId) {
         this.appointmentId = appointmentId;
     }
 

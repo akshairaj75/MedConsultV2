@@ -3,7 +3,6 @@ package com.backend.medconsult.service.Doctor;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
 
 import com.backend.medconsult.dto.doctor.AppointmentSlotRequestDto;
 import com.backend.medconsult.dto.doctor.AppointmentSlotResponseDto;

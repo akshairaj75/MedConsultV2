@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public class AppointmentResponseDto {
 
-    private String appointmentId;
+    private UUID appointmentId;
     private UUID patientId;
     private String patientName;
     private UUID dcId;
@@ -36,11 +36,11 @@ public class AppointmentResponseDto {
 
     // ─── Getters & Setters ────────────────────────────────────────────
 
-    public String getAppointmentId() {
+    public UUID getAppointmentId() {
         return appointmentId;
     }
 
-    public void setAppointmentId(String appointmentId) {
+    public void setAppointmentId(UUID appointmentId) {
         this.appointmentId = appointmentId;
     }
 
