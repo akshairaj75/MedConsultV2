@@ -16,24 +16,59 @@ public class ClinicSearchRequest {
     private String sortBy = "nameEn";
     private String sortDir = "asc";
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+        return name;
+    }
 
-    public UUID getSpecialtyId() { return specialtyId; }
-    public void setSpecialtyId(UUID specialtyId) { this.specialtyId = specialtyId; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public Boolean getIsActive() { return isActive; }
-    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
+    public UUID getSpecialtyId() {
+        return specialtyId;
+    }
 
-    public int getPage() { return page; }
-    public void setPage(int page) { this.page = page; }
+    public void setSpecialtyId(UUID specialtyId) {
+        this.specialtyId = specialtyId;
+    }
 
-    public int getSize() { return size; }
-    public void setSize(int size) { this.size = size; }
+    public Boolean getIsActive() {
+        return isActive;
+    }
 
-    public String getSortBy() { return sortBy; }
-    public void setSortBy(String sortBy) { this.sortBy = sortBy; }
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
 
-    public String getSortDir() { return sortDir; }
-    public void setSortDir(String sortDir) { this.sortDir = sortDir; }
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public String getSortBy() {
+        return sortBy;
+    }
+
+    public void setSortBy(String sortBy) {
+        this.sortBy = sortBy;
+    }
+
+    public String getSortDir() {
+        return sortDir;
+    }
+
+    public void setSortDir(String sortDir) {
+        this.sortDir = sortDir;
+    }
 }
