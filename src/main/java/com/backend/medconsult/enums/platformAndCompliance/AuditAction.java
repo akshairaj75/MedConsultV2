@@ -8,5 +8,6 @@ public enum AuditAction {
     EXPORT,
     SHARE,
     LOGIN,
-    LOGOUT
+    LOGOUT,
+    DOWNLOAD
 }

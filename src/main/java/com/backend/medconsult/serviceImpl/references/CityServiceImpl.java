@@ -3,9 +3,7 @@ package com.backend.medconsult.serviceImpl.references;
 import java.util.List;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
