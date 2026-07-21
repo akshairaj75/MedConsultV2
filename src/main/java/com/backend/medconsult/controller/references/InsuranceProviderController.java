@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,12 +37,24 @@ public class InsuranceProviderController {
     }
 
     @PostMapping("/add-provider")
-    public InsuranceProviderResponseDto addProvider(
+    public ResponseEntity<InsuranceProviderResponseDto> addProvider(
             @RequestPart("body") InsuranceProviderRequestDto dto,
             @RequestPart(value = "file", required = false) MultipartFile file,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
-        return insuranceServiceProvider.addProvider(dto, file, authUser, request);
+        InsuranceProviderResponseDto provider = insuranceServiceProvider.addProvider(dto, file, authUser, request);
+        return ResponseEntity.ok(provider);
+    }
+    @PostMapping("/add-provider/bulk")
+    public ResponseEntity<List<InsuranceProviderResponseDto>> addProviderBulk(
+            @RequestBody List<InsuranceProviderRequestDto> dtos,
+            @AuthenticationPrincipal CustomUserPrincipal authUser,
+            HttpServletRequest request) {
+        List<InsuranceProviderResponseDto> providers = dtos.stream()
+                .map(dto -> insuranceServiceProvider.addProvider(dto, null, authUser, request))
+                .filter(provider -> provider != null)
+                .toList();
+        return ResponseEntity.ok(providers);
     }
 
     @PutMapping("/{id}/update")

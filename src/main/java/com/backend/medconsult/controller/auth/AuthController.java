@@ -1,5 +1,7 @@
 package com.backend.medconsult.controller.auth;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +22,16 @@ public class AuthController {
     @Autowired
     UserService userService;
 
-     @PostMapping("/register")
+    @PostMapping("/register")
     public ResponseEntity<AuthResponseDto> register( @RequestBody RegisterRequestDto dto) {
         AuthResponseDto registered = userService.register(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(registered);
+    }
+    @PostMapping("/register/bulk")
+    public ResponseEntity<List<AuthResponseDto>> registerBulk( @RequestBody List<RegisterRequestDto> dtos) {
+        List<AuthResponseDto> registered = dtos.stream()
+                .map(dto -> userService.register(dto))
+                .toList();
         return ResponseEntity.status(HttpStatus.CREATED).body(registered);
     }
 

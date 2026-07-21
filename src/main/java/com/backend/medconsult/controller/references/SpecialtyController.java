@@ -31,13 +31,24 @@ public class SpecialtyController {
     @Autowired
     SpecialtyService specialtyService;
 
-    @PostMapping("/add")
-    @PreAuthorize("hasAuthority('SYSTEM_ADMIN')")
+    @PostMapping("/add-specialty")
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     public ResponseEntity<SpecialtyResponseDto> addSpecialty(@RequestBody SpecialtyRequestDto dto,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
         SpecialtyResponseDto specialty = specialtyService.addSpecialty(dto, authUser, request);
         return ResponseEntity.ok(specialty);
+    }
+    @PostMapping("/add-specialty/bulk")
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
+    public ResponseEntity<List<SpecialtyResponseDto>> addSpecialtyBulk(@RequestBody List<SpecialtyRequestDto> dtos,
+            @AuthenticationPrincipal CustomUserPrincipal authUser,
+            HttpServletRequest request) {
+        List<SpecialtyResponseDto> specialties = dtos.stream()
+                .map(dto -> specialtyService.addSpecialty(dto, authUser, request))
+                .filter(specialty -> specialty != null)
+                .toList();
+        return ResponseEntity.ok(specialties);
     }
 
     @GetMapping("/all")
@@ -54,7 +65,7 @@ public class SpecialtyController {
     }
 
     @PatchMapping("/{specialityId}/edit")
-    @PreAuthorize("hasAuthority('SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     public ResponseEntity<SpecialtyResponseDto> updateSpecialty(@PathVariable UUID specialityId, @RequestBody SpecialtyRequestDto dto,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
@@ -63,7 +74,7 @@ public class SpecialtyController {
     }
 
     @DeleteMapping("/{specialityId}/delete")
-    @PreAuthorize("hasAuthority('SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     public ResponseEntity<String> deleteSpecialty(@PathVariable UUID specialityId,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
@@ -72,16 +83,28 @@ public class SpecialtyController {
     }
 
     @PostMapping("/sub/add")
-    @PreAuthorize("hasAuthority('SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     public ResponseEntity<SubSpecialtyResponseDto> addSubSpecialty(@RequestBody SubSpecialtyRequestDto dto,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
         SubSpecialtyResponseDto subSpecialty = specialtyService.addSubSpecialty(dto, authUser, request);
         return ResponseEntity.ok(subSpecialty);
     }
+    
+    @PostMapping("/sub/add/bulk")
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
+    public ResponseEntity<List<SubSpecialtyResponseDto>> addSubSpecialtyBulk(@RequestBody List<SubSpecialtyRequestDto> dtos,
+            @AuthenticationPrincipal CustomUserPrincipal authUser,
+            HttpServletRequest request) {
+        List<SubSpecialtyResponseDto> subSpecialties = dtos.stream()
+                .map(dto -> specialtyService.addSubSpecialty(dto, authUser, request))
+                .filter(subSpecialty -> subSpecialty != null)
+                .toList();
+        return ResponseEntity.ok(subSpecialties);
+    }
 
     @PatchMapping("/sub/{subSpecialtyId}/edit")
-    @PreAuthorize("hasAuthority('SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     public ResponseEntity<SubSpecialtyResponseDto> updateSubSpecialty(@PathVariable UUID subSpecialtyId, @RequestBody SubSpecialtyRequestDto dto,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
@@ -90,7 +113,7 @@ public class SpecialtyController {
     }
 
     @DeleteMapping("/sub/{subSpecialtyId}/delete")
-    @PreAuthorize("hasAuthority('SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     public ResponseEntity<String> deleteSubSpecialty(@PathVariable UUID subSpecialtyId,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {

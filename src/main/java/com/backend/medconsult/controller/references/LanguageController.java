@@ -38,22 +38,33 @@ public class LanguageController {
     @PostMapping("/add")
     @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     public ResponseEntity<LanguageResponseDto> addLanguage(
-        @RequestBody LanguageRequestDto dto,
-        @AuthenticationPrincipal CustomUserPrincipal authUser,
-        HttpServletRequest request
-    ) {
+            @RequestBody LanguageRequestDto dto,
+            @AuthenticationPrincipal CustomUserPrincipal authUser,
+            HttpServletRequest request) {
         LanguageResponseDto language = languageService.addLanguage(dto, authUser, request);
         return ResponseEntity.ok(language);
+    }
+
+    @PostMapping("/add/bulk")
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
+    public ResponseEntity<List<LanguageResponseDto>> addLanguageBulk(
+            @RequestBody List<LanguageRequestDto> dtos,
+            @AuthenticationPrincipal CustomUserPrincipal authUser,
+            HttpServletRequest request) {
+        List<LanguageResponseDto> languages = dtos.stream()
+                .map(dto -> languageService.addLanguage(dto, authUser, request))
+                .filter(language -> language != null)
+                .toList();
+        return ResponseEntity.ok(languages);
     }
 
     @PatchMapping("/{id}/edit")
     @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     public ResponseEntity<LanguageResponseDto> updateLanguage(
-        @PathVariable UUID id,
-        @RequestBody LanguageRequestDto dto,
-        @AuthenticationPrincipal CustomUserPrincipal authUser,
-        HttpServletRequest request
-    ) {
+            @PathVariable UUID id,
+            @RequestBody LanguageRequestDto dto,
+            @AuthenticationPrincipal CustomUserPrincipal authUser,
+            HttpServletRequest request) {
         LanguageResponseDto language = languageService.updateLanguage(id, dto, authUser, request);
         return ResponseEntity.ok(language);
     }
@@ -61,10 +72,9 @@ public class LanguageController {
     @DeleteMapping("/{id}/delete")
     @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     public ResponseEntity<String> deleteLanguage(
-        @PathVariable UUID id,
-        @AuthenticationPrincipal CustomUserPrincipal authUser,
-        HttpServletRequest request
-    ) {
+            @PathVariable UUID id,
+            @AuthenticationPrincipal CustomUserPrincipal authUser,
+            HttpServletRequest request) {
         String message = languageService.deleteLanguage(id, authUser, request);
         return ResponseEntity.ok(message);
     }

@@ -241,7 +241,8 @@ public class ClinicServiceImpl implements ClinicService {
     public ClinicBranchResponseDto createClinicBranch(UUID clinicId, ClinicBranchRequestDto dto,
             CustomUserPrincipal principal) {
 
-        Clinic clinic = findClinicOrThrow(clinicId);
+        Clinic clinic = clinicRepository.findById(clinicId)
+        .orElseThrow(() -> new RuntimeException("Clinic not found: " + clinicId));
 
         Locality locality = localityRepository.findById(dto.getLocalityId())
                 .orElseThrow(() -> new RuntimeException("Locality not found: " + dto.getLocalityId()));

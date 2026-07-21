@@ -9,7 +9,6 @@ import java.util.UUID;
 
 public class ClinicBranchRequestDto {
 
-    @NotNull(message = "Clinic ID is required")
     private UUID clinicId;
 
     @NotBlank(message = "English branch name is required")

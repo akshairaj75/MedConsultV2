@@ -61,6 +61,20 @@ public class CityController {
         return ResponseEntity.ok(res);
     }
 
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
+    @PostMapping("/add/bulk")
+    public ResponseEntity<List<CityResponseDto>> addBulkCities(
+            @RequestBody List<CityRequestDto> dtos,
+            @AuthenticationPrincipal CustomUserPrincipal authUser,
+            HttpServletRequest request) {
+        List<CityResponseDto> res = dtos.stream().map(dto -> cityService.addCity(dto, authUser, request))
+                .filter(city -> city != null).toList();
+        if (res == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(res);
+    }
+
     @PatchMapping("/{cityId}/edit")
     @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     public ResponseEntity<CityResponseDto> updateCity(
@@ -109,6 +123,19 @@ public class CityController {
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
         LocalityResponseDto res = cityService.addLocality(dto, authUser, request);
+        if (res == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(res);
+    }
+    @PostMapping("/locality/add/bulk")
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
+    public ResponseEntity<List<LocalityResponseDto>> addBulkLocalities(
+            @RequestBody List<LocalityRequestDto> dtos, 
+            @AuthenticationPrincipal CustomUserPrincipal authUser,
+            HttpServletRequest request) {
+        List<LocalityResponseDto> res = dtos.stream().map(dto -> cityService.addLocality(dto, authUser, request))
+                .toList();
         if (res == null) {
             return ResponseEntity.badRequest().build();
         }
