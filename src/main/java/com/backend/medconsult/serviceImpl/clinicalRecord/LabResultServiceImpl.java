@@ -38,8 +38,7 @@ import java.util.stream.Collectors;
 @Service
 public class LabResultServiceImpl implements LabResultService {
 
-    private static final Set<String> ALLOWED_SORT_FIELDS =
-            Set.of("reportDate", "createdAt", "status");
+    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("reportDate", "createdAt", "status");
 
     @Autowired
     private LabResultRepository labResultRepository;
@@ -60,7 +59,8 @@ public class LabResultServiceImpl implements LabResultService {
     private FileStorageService fileStorageService;
 
     @Override
-    public Page<LabResultResponseDto> searchLabResults(UUID patientId, UUID orderedById, LabResultStatus status, ResultFlag overallFlag, int page, int size, String sortBy, String sortDir) {
+    public Page<LabResultResponseDto> searchLabResults(UUID patientId, UUID orderedById, LabResultStatus status,
+            ResultFlag overallFlag, int page, int size, String sortBy, String sortDir) {
         String sortField = ALLOWED_SORT_FIELDS.contains(sortBy) ? sortBy : "reportDate";
         Sort.Direction direction = "asc".equalsIgnoreCase(sortDir) ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
@@ -77,9 +77,10 @@ public class LabResultServiceImpl implements LabResultService {
 
     @Transactional
     @Override
-    public LabResultResponseDto createLabResult(LabResultRequestDto dto, MultipartFile file, CustomUserPrincipal principal) {
+    public LabResultResponseDto createLabResult(LabResultRequestDto dto, MultipartFile file,
+            CustomUserPrincipal principal) {
         LabResult labResult = new LabResult();
-        
+
         Patient patient = patientRepository.findById(dto.getPatientId())
                 .orElseThrow(() -> new RuntimeException("Patient not found: " + dto.getPatientId()));
         labResult.setPatient(patient);
@@ -90,11 +91,42 @@ public class LabResultServiceImpl implements LabResultService {
             labResult.setOrderedBy(orderedBy);
         }
 
-        applyDtoToLabResult(labResult, dto);
+        if (dto.getLabName() != null)
+            labResult.setLabName(dto.getLabName());
+        if (dto.getReportType() != null)
+            labResult.setReportType(dto.getReportType());
+        if (dto.getReportDate() != null)
+            labResult.setReportDate(dto.getReportDate());
+        if (dto.getStatus() != null)
+            labResult.setStatus(dto.getStatus());
+        if (dto.getOverallFlag() != null)
+            labResult.setOverallFlag(dto.getOverallFlag());
+        if (dto.getDoctorAnnotation() != null)
+            labResult.setDoctorAnnotation(dto.getDoctorAnnotation());
+        if (dto.getAnnotatedAt() != null)
+            labResult.setAnnotatedAt(dto.getAnnotatedAt());
+        if (dto.getNaphiesReference() != null)
+            labResult.setNaphiesReference(dto.getNaphiesReference());
+        // applyDtoToLabResult(labResult, dto);
 
         if (file != null && !file.isEmpty()) {
-            FileMetadata fileMetadata = storeLabResultFile(file);
-            labResult.setFile(fileMetadata);
+            // FileMetadata fileMetadata = storeLabResultFile(file);
+            try {
+                String storageKey = fileStorageService.storeFile(file, "clinicalRecords/labResults");
+                FileMetadata metadata = new FileMetadata();
+                metadata.setOriginalFilename(file.getOriginalFilename());
+                metadata.setStorageKey(storageKey);
+                metadata.setMimeType(file.getContentType());
+                metadata.setSizeBytes(file.getSize());
+                metadata.setCategory(FileCategory.LAB_REPORT);
+                metadata.setUploadedBy(principal.getUser());
+                metadata.setIsEncrypted(true);
+                FileMetadata fileMetadata = fileMetadataRepository.save(metadata);
+                labResult.setFile(fileMetadata);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to store lab result file", e);
+            }
+            // labResult.setFile(fileMetadata);
         }
 
         return LabResultResponseDto.fromEntity(labResultRepository.save(labResult));
@@ -102,7 +134,8 @@ public class LabResultServiceImpl implements LabResultService {
 
     @Transactional
     @Override
-    public LabResultResponseDto updateLabResult(UUID id, LabResultRequestDto dto, MultipartFile file, CustomUserPrincipal principal) {
+    public LabResultResponseDto updateLabResult(UUID id, LabResultRequestDto dto, MultipartFile file,
+            CustomUserPrincipal principal) {
         LabResult labResult = findLabResultOrThrow(id);
 
         if (dto.getPatientId() != null && !dto.getPatientId().equals(labResult.getPatient().getPatientId())) {
@@ -112,7 +145,8 @@ public class LabResultServiceImpl implements LabResultService {
         }
 
         if (dto.getOrderedById() != null) {
-            if (labResult.getOrderedBy() == null || !dto.getOrderedById().equals(labResult.getOrderedBy().getDoctorId())) {
+            if (labResult.getOrderedBy() == null
+                    || !dto.getOrderedById().equals(labResult.getOrderedBy().getDoctorId())) {
                 Doctor orderedBy = doctorRepository.findById(dto.getOrderedById())
                         .orElseThrow(() -> new RuntimeException("Doctor not found: " + dto.getOrderedById()));
                 labResult.setOrderedBy(orderedBy);
@@ -120,9 +154,9 @@ public class LabResultServiceImpl implements LabResultService {
         }
 
         if (dto.getAnnotatedById() != null) {
-             Doctor annotatedBy = doctorRepository.findById(dto.getAnnotatedById())
-                        .orElseThrow(() -> new RuntimeException("Doctor not found: " + dto.getAnnotatedById()));
-             labResult.setAnnotatedBy(annotatedBy);
+            Doctor annotatedBy = doctorRepository.findById(dto.getAnnotatedById())
+                    .orElseThrow(() -> new RuntimeException("Doctor not found: " + dto.getAnnotatedById()));
+            labResult.setAnnotatedBy(annotatedBy);
         }
 
         applyDtoToLabResult(labResult, dto);
@@ -131,9 +165,9 @@ public class LabResultServiceImpl implements LabResultService {
             FileMetadata fileMetadata = storeLabResultFile(file);
             labResult.setFile(fileMetadata);
         } else if (dto.getFileId() != null) {
-             FileMetadata existingFile = fileMetadataRepository.findById(dto.getFileId())
+            FileMetadata existingFile = fileMetadataRepository.findById(dto.getFileId())
                     .orElseThrow(() -> new RuntimeException("File not found: " + dto.getFileId()));
-             labResult.setFile(existingFile);
+            labResult.setFile(existingFile);
         }
 
         return LabResultResponseDto.fromEntity(labResultRepository.save(labResult));
@@ -191,25 +225,41 @@ public class LabResultServiceImpl implements LabResultService {
     }
 
     private void applyDtoToLabResult(LabResult labResult, LabResultRequestDto dto) {
-        if (dto.getLabName() != null) labResult.setLabName(dto.getLabName());
-        if (dto.getReportType() != null) labResult.setReportType(dto.getReportType());
-        if (dto.getReportDate() != null) labResult.setReportDate(dto.getReportDate());
-        if (dto.getStatus() != null) labResult.setStatus(dto.getStatus());
-        if (dto.getOverallFlag() != null) labResult.setOverallFlag(dto.getOverallFlag());
-        if (dto.getDoctorAnnotation() != null) labResult.setDoctorAnnotation(dto.getDoctorAnnotation());
-        if (dto.getAnnotatedAt() != null) labResult.setAnnotatedAt(dto.getAnnotatedAt());
-        if (dto.getNaphiesReference() != null) labResult.setNaphiesReference(dto.getNaphiesReference());
+        if (dto.getLabName() != null)
+            labResult.setLabName(dto.getLabName());
+        if (dto.getReportType() != null)
+            labResult.setReportType(dto.getReportType());
+        if (dto.getReportDate() != null)
+            labResult.setReportDate(dto.getReportDate());
+        if (dto.getStatus() != null)
+            labResult.setStatus(dto.getStatus());
+        if (dto.getOverallFlag() != null)
+            labResult.setOverallFlag(dto.getOverallFlag());
+        if (dto.getDoctorAnnotation() != null)
+            labResult.setDoctorAnnotation(dto.getDoctorAnnotation());
+        if (dto.getAnnotatedAt() != null)
+            labResult.setAnnotatedAt(dto.getAnnotatedAt());
+        if (dto.getNaphiesReference() != null)
+            labResult.setNaphiesReference(dto.getNaphiesReference());
     }
 
     private void applyDtoToLabItem(LabItem item, LabItemRequestDto dto) {
-        if (dto.getTestName() != null) item.setTestName(dto.getTestName());
-        if (dto.getLoincCode() != null) item.setLoincCode(dto.getLoincCode());
-        if (dto.getValue() != null) item.setValue(dto.getValue());
-        if (dto.getUnit() != null) item.setUnit(dto.getUnit());
-        if (dto.getReferenceLow() != null) item.setReferenceLow(dto.getReferenceLow());
-        if (dto.getReferenceHigh() != null) item.setReferenceHigh(dto.getReferenceHigh());
-        if (dto.getFlag() != null) item.setFlag(dto.getFlag());
-        if (dto.getSortOrder() != null) item.setSortOrder(dto.getSortOrder());
+        if (dto.getTestName() != null)
+            item.setTestName(dto.getTestName());
+        if (dto.getLoincCode() != null)
+            item.setLoincCode(dto.getLoincCode());
+        if (dto.getValue() != null)
+            item.setValue(dto.getValue());
+        if (dto.getUnit() != null)
+            item.setUnit(dto.getUnit());
+        if (dto.getReferenceLow() != null)
+            item.setReferenceLow(dto.getReferenceLow());
+        if (dto.getReferenceHigh() != null)
+            item.setReferenceHigh(dto.getReferenceHigh());
+        if (dto.getFlag() != null)
+            item.setFlag(dto.getFlag());
+        if (dto.getSortOrder() != null)
+            item.setSortOrder(dto.getSortOrder());
     }
 
     private FileMetadata storeLabResultFile(MultipartFile file) {
