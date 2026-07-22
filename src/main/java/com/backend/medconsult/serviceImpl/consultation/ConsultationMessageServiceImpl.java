@@ -22,6 +22,7 @@ import com.backend.medconsult.service.consultation.ConsultationMessageService;
 import com.backend.medconsult.service.platformAndCompliance.AccessLogService;
 import com.backend.medconsult.service.platformAndCompliance.NotificationService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +55,9 @@ public class ConsultationMessageServiceImpl implements ConsultationMessageServic
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @Transactional
     @Override
@@ -95,12 +99,12 @@ public class ConsultationMessageServiceImpl implements ConsultationMessageServic
         consultation.setLastMessageAt(saved.getSentAt());
         consultationRepository.save(consultation);
 
-        UUID recipientId = sender.getUserId().equals(consultation.getPatient().getUser().getUserId())
-                ? consultation.getDoctor().getUser().getUserId()
-                : consultation.getPatient().getUser().getUserId();
+        User recipientUser = sender.getUserId().equals(consultation.getPatient().getUser().getUserId())
+                ? consultation.getDoctor().getUser()
+                : consultation.getPatient().getUser();
 
         notificationService.notify(
-                recipientId,
+                recipientUser.getUserId(),
                 NotificationType.NEW_MESSAGE,
                 "New Message",
                 "You have a new message in your consultation",
@@ -116,7 +120,25 @@ public class ConsultationMessageServiceImpl implements ConsultationMessageServic
                 null,
                 AuditOutcome.SUCCESS);
 
-        return ConsultationMessageResponseDto.fromEntity(saved);
+        ConsultationMessageResponseDto responseDto = ConsultationMessageResponseDto.fromEntity(saved);
+
+        // Real-time STOMP WebSocket dispatch
+        try {
+            // Broadcast to consultation channel
+            messagingTemplate.convertAndSend("/topic/consultation/" + consultation.getConsultationId(), (Object) responseDto);
+
+            // Directly message the recipient user
+            if (recipientUser.getEmail() != null) {
+                messagingTemplate.convertAndSendToUser(recipientUser.getEmail(), "/queue/messages", (Object) responseDto);
+            }
+            if (recipientUser.getUserId() != null) {
+                messagingTemplate.convertAndSendToUser(recipientUser.getUserId().toString(), "/queue/messages", (Object) responseDto);
+            }
+        } catch (Exception e) {
+            // Log exception but do not break database transaction
+        }
+
+        return responseDto;
     }
 
     @Override
