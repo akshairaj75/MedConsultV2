@@ -47,6 +47,18 @@ public class ConsultationController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/my/doctor")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'CLINIC_ADMIN', 'SYSTEM_ADMIN')")
+    public ResponseEntity<Page<ConsultationResponseDto>> getMyDoctorConsultations(
+            @AuthenticationPrincipal CustomUserPrincipal authUser,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request) {
+
+        Page<ConsultationResponseDto> result = consultationService.getMyDoctorConsultations(authUser, page, size, request);
+        return ResponseEntity.ok(result);
+    }
+
     @PostMapping("/search")
     @PreAuthorize("hasAnyRole('DOCTOR', 'CLINIC_ADMIN', 'SYSTEM_ADMIN')")
     public ResponseEntity<Page<ConsultationResponseDto>> searchConsultations(

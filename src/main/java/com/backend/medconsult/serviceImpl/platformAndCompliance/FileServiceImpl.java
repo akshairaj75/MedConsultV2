@@ -12,6 +12,7 @@ import com.backend.medconsult.enums.platformAndCompliance.ResourceType;
 import com.backend.medconsult.repository.platformAndCompliance.FileMetadataRepository;
 import com.backend.medconsult.repository.usersAndPatients.PatientRepository;
 import com.backend.medconsult.security.CustomUserPrincipal;
+import com.backend.medconsult.service.FileStorageService;
 import com.backend.medconsult.service.platformAndCompliance.AccessLogService;
 import com.backend.medconsult.service.platformAndCompliance.FileService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,9 +44,13 @@ public class FileServiceImpl implements FileService {
     @Autowired
     private AccessLogService accessLogService;
 
+    @Autowired
+    private FileStorageService fileStorageService;
+
     @Transactional
     @Override
-    public FileMetadataResponseDto uploadFile(MultipartFile file, FileUploadRequestDto dto, CustomUserPrincipal authUser, HttpServletRequest request) {
+    public FileMetadataResponseDto uploadFile(MultipartFile file, FileUploadRequestDto dto,
+            CustomUserPrincipal authUser, HttpServletRequest request) {
         User uploader = authUser.getUser();
         Patient patient = null;
 
@@ -57,12 +62,22 @@ public class FileServiceImpl implements FileService {
         FileMetadata metadata = new FileMetadata();
         metadata.setUploadedBy(uploader);
         metadata.setOriginalFilename(file.getOriginalFilename());
+        System.out.println("==============================");
+        System.out.println("Filename: " + file.getOriginalFilename());
+        System.out.println("Content-Type: " + file.getContentType());
+        System.out.println("==============================");
         metadata.setMimeType(file.getContentType() != null ? file.getContentType() : "application/octet-stream");
         metadata.setSizeBytes(file.getSize());
         metadata.setCategory(dto.getCategory() != null ? dto.getCategory() : FileCategory.OTHER);
         metadata.setPatient(patient);
         metadata.setIsEncrypted(true);
-        metadata.setStorageKey("mocked-storage-path/" + UUID.randomUUID() + "-" + file.getOriginalFilename());
+
+        try {
+            String path = fileStorageService.storeFile(file, "clinicalRecords/labResults");
+            metadata.setStorageKey(path);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to store file", e);
+        }
 
         try {
             metadata.setChecksumSha256(calculateChecksum(file.getBytes()));
@@ -71,7 +86,8 @@ public class FileServiceImpl implements FileService {
         }
 
         // Simulating the actual file storage process here
-        // If this were an S3 integration, we'd upload the file.getBytes() to the storageKey path.
+        // If this were an S3 integration, we'd upload the file.getBytes() to the
+        // storageKey path.
 
         FileMetadata saved = fileMetadataRepository.save(metadata);
 
@@ -87,7 +103,8 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public FileMetadataResponseDto getFileMetadata(UUID fileId, CustomUserPrincipal authUser, HttpServletRequest request) {
+    public FileMetadataResponseDto getFileMetadata(UUID fileId, CustomUserPrincipal authUser,
+            HttpServletRequest request) {
         FileMetadata metadata = findFileOrThrow(fileId);
 
         accessLogService.log(
@@ -105,10 +122,15 @@ public class FileServiceImpl implements FileService {
     public Resource downloadFile(UUID fileId, CustomUserPrincipal authUser, HttpServletRequest request) {
         FileMetadata metadata = findFileOrThrow(fileId);
 
-        // Simulation: Since we don't have an actual S3 bucket, we return a mock ByteArrayResource 
-        // representing the file contents. In reality, we'd stream from metadata.getStorageKey()
-        byte[] mockFileContent = ("Mock file content for " + metadata.getOriginalFilename()).getBytes();
-        Resource resource = new ByteArrayResource(mockFileContent);
+        // Simulation: Since we don't have an actual S3 bucket, we return a mock
+        // ByteArrayResource
+        // representing the file contents. In reality, we'd stream from
+        // metadata.getStorageKey()
+        // byte[] mockFileContent = ("Mock file content for " +
+        // metadata.getOriginalFilename()).getBytes();
+        // Resource resource = new ByteArrayResource(mockFileContent);
+
+        Resource resource = fileStorageService.loadFileAsResource(metadata.getStorageKey());
 
         accessLogService.log(
                 authUser.getUser(),
@@ -122,7 +144,8 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public Page<FileMetadataResponseDto> getFilesByPatient(UUID patientId, FileCategory category, int page, int size, CustomUserPrincipal authUser, HttpServletRequest request) {
+    public Page<FileMetadataResponseDto> getFilesByPatient(UUID patientId, FileCategory category, int page, int size,
+            CustomUserPrincipal authUser, HttpServletRequest request) {
         Patient patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new RuntimeException("Patient not found with ID: " + patientId));
 

@@ -1,6 +1,7 @@
 package com.backend.medconsult.service;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
@@ -9,6 +10,8 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,6 +44,22 @@ public class FileStorageService {
         return uploadDir + folder + "/" + fileName;
 
     }
+
+    public Resource loadFileAsResource(String filePath) {
+    try {
+        Path path = Paths.get(filePath).normalize();
+        Resource resource = new UrlResource(path.toUri());
+
+        if (resource.exists() && resource.isReadable()) {
+            return resource;
+        }
+
+        throw new RuntimeException("File not found: " + filePath);
+    } catch (MalformedURLException e) {
+        throw new RuntimeException("Could not load file: " + filePath, e);
+    }
+}
+
 
     public void deleteFile(String fileUrl) {
         try {

@@ -23,4 +23,7 @@ public interface ConsultationService {
     Page<ConsultationResponseDto> getConsultationsByPatient(UUID patientId, int page, int size, CustomUserPrincipal authUser, HttpServletRequest request);
 
     Page<ConsultationResponseDto> getConsultationsByDoctor(UUID doctorId, int page, int size, CustomUserPrincipal authUser, HttpServletRequest request);
+
+    Page<ConsultationResponseDto> getMyDoctorConsultations(CustomUserPrincipal authUser, int page, int size,
+            HttpServletRequest request);
 }

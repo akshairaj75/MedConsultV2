@@ -216,4 +216,28 @@ public class ConsultationServiceImpl implements ConsultationService {
             default -> "createdAt";
         };
     }
+
+    @Override
+    public Page<ConsultationResponseDto> getMyDoctorConsultations(CustomUserPrincipal authUser, int page, int size,
+                HttpServletRequest request) {
+        User user = authUser.getUser();
+        Doctor doc = doctorRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Doctor not found with ID: " + user.getUserId()));
+        
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Consultation> results = consultationRepository.findByDoctor_DoctorIdOrderByLastMessageAtDesc(doc.getDoctorId(), pageable);
+
+        accessLogService.log(
+                user,
+                null,
+                AuditAction.VIEW,
+                ResourceType.CONSULTATION,
+                null,
+                AuditOutcome.SUCCESS
+        );
+        
+        return results.map(ConsultationResponseDto::fromEntity);
+    }
+
+
 }

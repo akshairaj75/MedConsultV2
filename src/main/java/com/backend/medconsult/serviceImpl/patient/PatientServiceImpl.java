@@ -1,5 +1,7 @@
 package com.backend.medconsult.serviceImpl.patient;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.UUID;
 
@@ -187,9 +189,11 @@ public class PatientServiceImpl implements PatientService {
         profile.setPatient(patient);
         profile.setWeightKg(request.getWeightKg());
         profile.setHeightCm(request.getHeightCm());
+        profile.setBmi(calculateBmi(request.getWeightKg(), request.getHeightCm()));
         profile.setSmokingStatus(request.getSmokingStatus());
         profile.setAlcoholStatus(request.getAlcoholStatus());
         profile.setSurgicalHistory(request.getSurgicalHistory());
+        
         profile.setFamilyHistory(request.getFamilyHistory());
         profile.setAdditionalNotes(request.getAdditionalNotes());
         PatientHealthProfile saved = patientHealthProfileRepository.save(profile);
@@ -222,6 +226,7 @@ public class PatientServiceImpl implements PatientService {
         if (request.getHeightCm() != null) {
             profile.setHeightCm(request.getHeightCm());
         }
+        profile.setBmi(calculateBmi(profile.getWeightKg(), profile.getHeightCm()));
         if (request.getSmokingStatus() != null) {
             profile.setSmokingStatus(request.getSmokingStatus());
         }
@@ -460,5 +465,15 @@ public class PatientServiceImpl implements PatientService {
         return chronicConditions.stream()
                 .map(PatientChronicConditionResponseDto::fromEntity)
                 .toList();
+    }
+
+    private BigDecimal calculateBmi(BigDecimal weightKg, BigDecimal heightCm) {
+        if (weightKg == null || heightCm == null || heightCm.compareTo(BigDecimal.ZERO) <= 0
+                || weightKg.compareTo(BigDecimal.ZERO) <= 0) {
+            return null;
+        }
+        BigDecimal heightSq = heightCm.multiply(heightCm);
+        BigDecimal numerator = weightKg.multiply(new BigDecimal("10000"));
+        return numerator.divide(heightSq, 1, RoundingMode.HALF_UP);
     }
 }
