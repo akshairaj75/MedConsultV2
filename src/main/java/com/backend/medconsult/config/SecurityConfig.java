@@ -25,22 +25,6 @@ import jakarta.servlet.http.HttpServletResponse;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-        // @Bean
-        // public SecurityFilterChain securityFilterChain(
-        // HttpSecurity http) throws Exception {
-        // http
-        // .csrf(csrf -> csrf.disable())
-        // .sessionManagement(session -> session
-        // .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-        // .authorizeHttpRequests(auth -> auth
-        // // .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
-        // // .anyRequest().authenticated()
-        // .anyRequest().permitAll())
-        // .formLogin(Customizer.withDefaults());
-
-        // return http.build();
-        // }
-
         @Autowired
         private CustomOAuth2UserService oauthService;
 

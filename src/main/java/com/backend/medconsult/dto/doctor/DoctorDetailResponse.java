@@ -12,7 +12,7 @@ import com.backend.medconsult.enums.doctor.SlotStatus;
 public class DoctorDetailResponse {
     DoctorResponseDto doctor;
     List<String> languages;
-    List<String> specialties;
+    List<DoctorSpecialtyResponseDto> specialties;
     List<DoctorClinicResponseDto> clinics;
     List<String> qualifications;
     LocalDateTime nextAvailableSlot;
@@ -29,10 +29,10 @@ public class DoctorDetailResponse {
     public void setLanguages(List<String> languages) {
         this.languages = languages;
     }
-    public List<String> getSpecialties() {
+    public List<DoctorSpecialtyResponseDto> getSpecialties() {
         return specialties;
     }
-    public void setSpecialties(List<String> specialties) {
+    public void setSpecialties(List<DoctorSpecialtyResponseDto> specialties) {
         this.specialties = specialties;
     }
     public List<DoctorClinicResponseDto> getClinics() {
@@ -72,7 +72,7 @@ public class DoctorDetailResponse {
         }
         response.setLanguages(languages);
 
-        List<String> specialties = new java.util.ArrayList<>();
+        List<DoctorSpecialtyResponseDto> specialties = new java.util.ArrayList<>();
         if (doctor.getSpecialties() != null) {
             doctor.getSpecialties().stream()
                 .sorted((s1, s2) -> {
@@ -81,8 +81,8 @@ public class DoctorDetailResponse {
                     return Boolean.compare(p2, p1); // true (primary) first
                 })
                 .forEach(ds -> {
-                    if (ds.getSpecialty() != null && ds.getSpecialty().getNameEn() != null) {
-                        specialties.add(ds.getSpecialty().getNameEn());
+                    if (ds.getSpecialty() != null) {
+                        specialties.add(DoctorSpecialtyResponseDto.fromEntity(ds));
                     }
                 });
         }
