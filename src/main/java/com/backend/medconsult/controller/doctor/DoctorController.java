@@ -39,6 +39,8 @@ import com.backend.medconsult.dto.doctor.DoctorSpecialtyRequestDto;
 import com.backend.medconsult.dto.doctor.DoctorSpecialtyResponseDto;
 import com.backend.medconsult.security.CustomUserPrincipal;
 import com.backend.medconsult.service.Doctor.DoctorService;
+import com.backend.medconsult.service.clinic.ClinicAuthorizationService;
+import com.backend.medconsult.enums.usersAndPatients.UserRole;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -52,6 +54,9 @@ public class DoctorController {
 
     @Autowired
     private DoctorService doctorService;
+
+    @Autowired
+    private ClinicAuthorizationService clinicAuthorizationService;
 
     // ══════════════════════════════════════════════════════════════════
     // ─── Core Doctor CRUD ─────────────────────────────────────────────
@@ -99,6 +104,9 @@ public class DoctorController {
             @Valid @RequestBody DoctorRequestDto dto,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
+        if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyDoctorAdmin(id, authUser.getUserId());
+        }
         return ResponseEntity.ok(doctorService.updateDoctor(id, dto, authUser, request));
     }
 
@@ -129,6 +137,9 @@ public class DoctorController {
             @Valid @RequestBody DoctorClinicRequestDto dto,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
+        if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyClinicAdmin(dto.getClinicId(), authUser.getUserId());
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 doctorService.addDoctorClinic(dto, authUser, request));
     }
@@ -140,6 +151,9 @@ public class DoctorController {
             @Valid @RequestBody DoctorClinicRequestDto dto,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
+        if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyDoctorClinicAdmin(dcId, authUser.getUserId());
+        }
         return ResponseEntity.ok(doctorService.updateDoctorClinic(dcId, dto, authUser, request));
     }
 
@@ -149,6 +163,9 @@ public class DoctorController {
             @PathVariable("dcId") UUID dcId,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
+        if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyDoctorClinicAdmin(dcId, authUser.getUserId());
+        }
         return ResponseEntity.ok(doctorService.removeDoctorClinic(dcId, authUser, request));
     }
 
@@ -274,6 +291,9 @@ public class DoctorController {
             @PathVariable("dcId") UUID dcId,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
+        if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyDoctorClinicAdmin(dcId, authUser.getUserId());
+        }
         return ResponseEntity.ok(doctorService.getDcSchedules(dcId, authUser, request));
     }
 
@@ -283,6 +303,9 @@ public class DoctorController {
             @Valid @RequestBody DoctorScheduleRequestDto dto,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
+        if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyDoctorClinicAdmin(dto.getDcId(), authUser.getUserId());
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 doctorService.addSchedule(dto, authUser, request));
     }
@@ -294,6 +317,9 @@ public class DoctorController {
             @Valid @RequestBody DoctorScheduleRequestDto dto,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
+        if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyScheduleAdmin(id, authUser.getUserId());
+        }
         return ResponseEntity.ok(doctorService.updateSchedule(id, dto, authUser, request));
     }
 
@@ -303,6 +329,9 @@ public class DoctorController {
             @PathVariable("id") UUID id,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
+        if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyScheduleAdmin(id, authUser.getUserId());
+        }
         return ResponseEntity.ok(doctorService.removeSchedule(id, authUser, request));
     }
 
@@ -316,6 +345,9 @@ public class DoctorController {
             @PathVariable("dcId") UUID dcId,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
+        if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyDoctorClinicAdmin(dcId, authUser.getUserId());
+        }
         return ResponseEntity.ok(doctorService.getDcLeave(dcId, authUser, request));
     }
 
@@ -325,6 +357,9 @@ public class DoctorController {
             @Valid @RequestBody DoctorLeaveRequestDto dto,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
+        if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyDoctorClinicAdmin(dto.getDcId(), authUser.getUserId());
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 doctorService.addLeave(dto, authUser, request));
     }
@@ -336,6 +371,9 @@ public class DoctorController {
             @Valid @RequestBody DoctorLeaveRequestDto dto,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
+        if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyLeaveAdmin(id, authUser.getUserId());
+        }
         return ResponseEntity.ok(doctorService.updateLeave(id, dto, authUser, request));
     }
 
@@ -345,6 +383,9 @@ public class DoctorController {
             @PathVariable("id") UUID id,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
+        if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyLeaveAdmin(id, authUser.getUserId());
+        }
         return ResponseEntity.ok(doctorService.removeLeave(id, authUser, request));
     }
 
@@ -358,6 +399,9 @@ public class DoctorController {
             @RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
+        if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyDoctorClinicAdmin(dcId, authUser.getUserId());
+        }
         return ResponseEntity.ok(doctorService.getAvailableSlots(dcId, date, authUser, request));
     }
 
@@ -367,6 +411,9 @@ public class DoctorController {
             @Valid @RequestBody AppointmentSlotRequestDto dto,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
+        if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyDoctorClinicAdmin(dto.getDcId(), authUser.getUserId());
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 doctorService.addSlot(dto, authUser, request));
     }
@@ -378,6 +425,9 @@ public class DoctorController {
             @Valid @RequestBody AppointmentSlotRequestDto dto,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
+        if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifySlotAdmin(id, authUser.getUserId());
+        }
         return ResponseEntity.ok(doctorService.updateSlot(id, dto, authUser, request));
     }
 
@@ -387,6 +437,9 @@ public class DoctorController {
             @PathVariable("id") UUID id,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
+        if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifySlotAdmin(id, authUser.getUserId());
+        }
         return ResponseEntity.ok(doctorService.removeSlot(id, authUser, request));
     }
 }

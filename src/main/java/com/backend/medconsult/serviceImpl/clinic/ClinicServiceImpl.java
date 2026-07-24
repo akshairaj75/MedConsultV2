@@ -32,6 +32,8 @@ import com.backend.medconsult.entity.clinic.ClinicInsurance;
 import com.backend.medconsult.entity.clinic.ClinicLanguage;
 import com.backend.medconsult.entity.clinic.ClinicOperatingHour;
 import com.backend.medconsult.entity.clinic.ClinicSpecialty;
+import com.backend.medconsult.entity.clinic.ClinicAdmin;
+import com.backend.medconsult.repository.clinic.ClinicAdminRepository;
 import com.backend.medconsult.entity.references.City;
 import com.backend.medconsult.entity.references.InsuranceProvider;
 import com.backend.medconsult.entity.references.Language;
@@ -74,6 +76,9 @@ public class ClinicServiceImpl implements ClinicService {
 
     @Autowired
     private ClinicRepository clinicRepository;
+
+    @Autowired
+    private ClinicAdminRepository clinicAdminRepository;
 
     @Autowired
     private ClinicBranchRepository clinicBranchRepository;
@@ -129,6 +134,7 @@ public class ClinicServiceImpl implements ClinicService {
                 trimOrNull(request.getName()),
                 request.getSpecialtyId(),
                 request.getIsActive(),
+                request.getClinicIds(),
                 pageable
         ).map(ClinicResponseDto::fromEntity);
     }
@@ -189,7 +195,17 @@ public class ClinicServiceImpl implements ClinicService {
             clinic.setLogoUrl(storeLogoOrThrow(logo));
         }
 
-        return ClinicResponseDto.fromEntity(clinicRepository.save(clinic));
+        Clinic saved = clinicRepository.save(clinic);
+
+        if (principal != null && principal.getUser().getRole() == com.backend.medconsult.enums.usersAndPatients.UserRole.CLINIC_ADMIN) {
+            ClinicAdmin ca = new ClinicAdmin();
+            ca.setClinic(saved);
+            ca.setUser(principal.getUser());
+            ca.setIsPrimary(true);
+            clinicAdminRepository.save(ca);
+        }
+
+        return ClinicResponseDto.fromEntity(saved);
     }
 
     @Transactional

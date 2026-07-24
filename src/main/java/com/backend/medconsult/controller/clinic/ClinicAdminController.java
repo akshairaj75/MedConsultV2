@@ -31,6 +31,8 @@ import com.backend.medconsult.dto.clinic.ClinicResponseDto;
 import com.backend.medconsult.dto.clinic.ClinicSpecialtyResponseDto;
 import com.backend.medconsult.security.CustomUserPrincipal;
 import com.backend.medconsult.service.clinic.ClinicService;
+import com.backend.medconsult.service.clinic.ClinicAuthorizationService;
+import com.backend.medconsult.enums.usersAndPatients.UserRole;
 
 import jakarta.validation.Valid;
 
@@ -46,6 +48,9 @@ public class ClinicAdminController {
 
     @Autowired
     private ClinicService clinicService;
+
+    @Autowired
+    private ClinicAuthorizationService clinicAuthorizationService;
 
     // ══════════════════════════════════════════════════════════════════
     // ─── Core Clinic CRUD ─────────────────────────────────────────────
@@ -68,6 +73,7 @@ public class ClinicAdminController {
             @RequestPart("body") ClinicRequestDto dto,
             @RequestPart(value = "logo", required = false) MultipartFile logo,
             @AuthenticationPrincipal CustomUserPrincipal principal) {
+        clinicAuthorizationService.verifyClinicAdmin(id, principal.getUserId());
         return ResponseEntity.ok(clinicService.updateClinic(id, dto, logo, principal));
     }
 
@@ -76,6 +82,7 @@ public class ClinicAdminController {
     public ResponseEntity<Void> deleteClinic(
             @PathVariable("id") UUID id,
             @AuthenticationPrincipal CustomUserPrincipal principal) {
+        clinicAuthorizationService.verifyClinicAdmin(id, principal.getUserId());
         clinicService.deleteClinic(id, principal);
         return ResponseEntity.noContent().build();
     }
@@ -90,6 +97,7 @@ public class ClinicAdminController {
             @PathVariable("id") UUID id,
             @Valid @RequestBody ClinicBranchRequestDto dto,
             @AuthenticationPrincipal CustomUserPrincipal principal) {
+        clinicAuthorizationService.verifyClinicAdmin(id, principal.getUserId());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(clinicService.createClinicBranch(id, dto, principal));
     }
@@ -100,6 +108,7 @@ public class ClinicAdminController {
             @PathVariable("id") UUID id,
             @RequestBody ClinicBranchRequestDto dto,
             @AuthenticationPrincipal CustomUserPrincipal principal) {
+        clinicAuthorizationService.verifyBranchAdmin(id, principal.getUserId());
         return ResponseEntity.ok(clinicService.updateClinicBranch(id, dto, principal));
     }
 
@@ -108,6 +117,7 @@ public class ClinicAdminController {
     public ResponseEntity<Void> deleteClinicBranch(
             @PathVariable("id") UUID id,
             @AuthenticationPrincipal CustomUserPrincipal principal) {
+        clinicAuthorizationService.verifyBranchAdmin(id, principal.getUserId());
         clinicService.deleteClinicBranch(id, principal);
         return ResponseEntity.noContent().build();
     }
@@ -122,6 +132,7 @@ public class ClinicAdminController {
             @PathVariable("id") UUID id,
             @RequestBody List<ClinicOperatingHourRequestDto> dtos,
             @AuthenticationPrincipal CustomUserPrincipal principal) {
+        clinicAuthorizationService.verifyBranchAdmin(id, principal.getUserId());
         return ResponseEntity.ok(clinicService.updateBranchHours(id, dtos, principal));
     }
 
@@ -139,6 +150,7 @@ public class ClinicAdminController {
             @PathVariable("id") UUID id,
             @PathVariable("specialtyId") UUID specialtyId,
             @AuthenticationPrincipal CustomUserPrincipal principal) {
+        clinicAuthorizationService.verifyClinicAdmin(id, principal.getUserId());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(clinicService.addClinicSpecialty(id, specialtyId, principal));
     }
@@ -153,6 +165,7 @@ public class ClinicAdminController {
             @PathVariable("id") UUID id,
             @PathVariable("specialtyId") UUID specialtyId,
             @AuthenticationPrincipal CustomUserPrincipal principal) {
+        clinicAuthorizationService.verifyClinicAdmin(id, principal.getUserId());
         clinicService.deleteClinicSpecialty(id, specialtyId, principal);
         return ResponseEntity.noContent().build();
     }
@@ -171,6 +184,7 @@ public class ClinicAdminController {
             @PathVariable("providerId") UUID providerId,
             @RequestBody(required = false) ClinicInsuranceRequestDto dto,
             @AuthenticationPrincipal CustomUserPrincipal principal) {
+        clinicAuthorizationService.verifyClinicAdmin(id, principal.getUserId());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(clinicService.addClinicInsurance(id, providerId, dto, principal));
     }
@@ -184,6 +198,7 @@ public class ClinicAdminController {
             @PathVariable("id") UUID id,
             @PathVariable("providerId") UUID providerId,
             @AuthenticationPrincipal CustomUserPrincipal principal) {
+        clinicAuthorizationService.verifyClinicAdmin(id, principal.getUserId());
         clinicService.deleteClinicInsurance(id, providerId, principal);
         return ResponseEntity.noContent().build();
     }
@@ -201,6 +216,7 @@ public class ClinicAdminController {
             @PathVariable("id") UUID id,
             @PathVariable("languageId") UUID languageId,
             @AuthenticationPrincipal CustomUserPrincipal principal) {
+        clinicAuthorizationService.verifyClinicAdmin(id, principal.getUserId());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(clinicService.addClinicLanguage(id, languageId, principal));
     }
@@ -214,6 +230,7 @@ public class ClinicAdminController {
             @PathVariable("id") UUID id,
             @PathVariable("languageId") UUID languageId,
             @AuthenticationPrincipal CustomUserPrincipal principal) {
+        clinicAuthorizationService.verifyClinicAdmin(id, principal.getUserId());
         clinicService.deleteClinicLanguage(id, languageId, principal);
         return ResponseEntity.noContent().build();
     }

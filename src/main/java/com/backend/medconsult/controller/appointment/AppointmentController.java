@@ -7,6 +7,8 @@ import com.backend.medconsult.dto.appointment.CancelAppointmentRequest;
 import com.backend.medconsult.dto.appointment.UpdateAppointmentStatusRequest;
 import com.backend.medconsult.security.CustomUserPrincipal;
 import com.backend.medconsult.service.appointment.AppointmentService;
+import com.backend.medconsult.service.clinic.ClinicAuthorizationService;
+import com.backend.medconsult.enums.usersAndPatients.UserRole;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -40,6 +42,9 @@ public class AppointmentController {
     @Autowired
     private AppointmentService appointmentService;
 
+    @Autowired
+    private ClinicAuthorizationService clinicAuthorizationService;
+
     // ─── Book ──────────────────────────────────────────────────────────
 
     /**
@@ -53,6 +58,10 @@ public class AppointmentController {
             @Valid @RequestBody AppointmentRequestDto dto,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
+
+        if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyDoctorClinicAdmin(dto.getDcId(), authUser.getUserId());
+        }
 
         AppointmentResponseDto response = appointmentService.bookAppointment(dto, authUser, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -105,6 +114,10 @@ public class AppointmentController {
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
 
+        if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyAppointmentAdmin(appointmentId, authUser.getUserId());
+        }
+
         AppointmentResponseDto response = appointmentService.updateStatus(appointmentId, statusRequest, authUser,
                 request);
         return ResponseEntity.ok(response);
@@ -122,6 +135,10 @@ public class AppointmentController {
             @Valid @RequestBody CancelAppointmentRequest cancelRequest,
             @AuthenticationPrincipal CustomUserPrincipal authUser,
             HttpServletRequest request) {
+
+        if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyAppointmentAdmin(appointmentId, authUser.getUserId());
+        }
 
         AppointmentResponseDto response = appointmentService.cancelAppointment(appointmentId, cancelRequest, authUser,
                 request);

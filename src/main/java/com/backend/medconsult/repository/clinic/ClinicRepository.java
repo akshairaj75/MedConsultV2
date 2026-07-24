@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
 
 @Repository
 public interface ClinicRepository extends JpaRepository<Clinic, UUID> {
@@ -36,6 +37,7 @@ public interface ClinicRepository extends JpaRepository<Clinic, UUID> {
                OR LOWER(c.nameAr) LIKE LOWER(CONCAT('%', :name, '%')))
           AND (:specialtyId IS NULL OR cs.specialty.specialtyId = :specialtyId)
           AND (:isActive IS NULL OR c.isActive = :isActive)
+          AND (:clinicIds IS NULL OR c.clinicId IN :clinicIds)
     """,
     countQuery = """
         SELECT COUNT(DISTINCT c) FROM Clinic c
@@ -45,10 +47,12 @@ public interface ClinicRepository extends JpaRepository<Clinic, UUID> {
                OR LOWER(c.nameAr) LIKE LOWER(CONCAT('%', :name, '%')))
           AND (:specialtyId IS NULL OR cs.specialty.specialtyId = :specialtyId)
           AND (:isActive IS NULL OR c.isActive = :isActive)
+          AND (:clinicIds IS NULL OR c.clinicId IN :clinicIds)
     """)
     Page<Clinic> searchClinics(
             @Param("name") String name,
             @Param("specialtyId") UUID specialtyId,
             @Param("isActive") Boolean isActive,
+            @Param("clinicIds") List<UUID> clinicIds,
             Pageable pageable);
 }

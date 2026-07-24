@@ -11,10 +11,19 @@ public class ClinicSearchRequest {
     private String name;
     private UUID specialtyId;
     private Boolean isActive;
+    private java.util.List<UUID> clinicIds;
     private int page = 0;
     private int size = 10;
     private String sortBy = "nameEn";
     private String sortDir = "asc";
+
+    public java.util.List<UUID> getClinicIds() {
+        return clinicIds;
+    }
+
+    public void setClinicIds(java.util.List<UUID> clinicIds) {
+        this.clinicIds = clinicIds;
+    }
 
     public String getName() {
         return name;

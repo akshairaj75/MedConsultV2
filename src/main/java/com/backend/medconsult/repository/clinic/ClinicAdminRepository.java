@@ -15,6 +15,10 @@ public interface ClinicAdminRepository extends JpaRepository<ClinicAdmin, UUID> 
 
     boolean existsByClinicAndUser(Clinic clinic, User user);
 
+    boolean existsByClinic_ClinicIdAndUser_UserId(UUID clinicId, UUID userId);
+
+    boolean existsByClinic_ClinicIdAndUser_UserIdAndIsPrimary(UUID clinicId, UUID userId, Boolean isPrimary);
+
     List<ClinicAdmin> findByClinic(Clinic clinic);
 
     List<ClinicAdmin> findByUser(User user);

@@ -83,6 +83,12 @@ public class ClinicExceptionHandler {
         return ResponseEntity.badRequest().body(body);
     }
 
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDenied(
+            org.springframework.security.access.AccessDeniedException ex, HttpServletRequest request) {
+        return buildError(HttpStatus.FORBIDDEN, "Access denied", request.getRequestURI());
+    }
+
     // ── Private builder ───────────────────────────────────────────────
 
     private ResponseEntity<Map<String, Object>> buildError(

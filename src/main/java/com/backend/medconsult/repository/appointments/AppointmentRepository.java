@@ -80,6 +80,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
               AND (:sessionType IS NULL OR a.sessionType = :sessionType)
               AND (:fromDate IS NULL    OR a.scheduledDate >= :fromDate)
               AND (:toDate IS NULL      OR a.scheduledDate <= :toDate)
+              AND (:clinicIds IS NULL   OR a.doctorClinic.clinic.clinicId IN :clinicIds)
             """)
     Page<Appointment> search(
             @Param("patientId")   UUID patientId,
@@ -90,6 +91,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
             @Param("sessionType") SessionType sessionType,
             @Param("fromDate")    LocalDate fromDate,
             @Param("toDate")      LocalDate toDate,
+            @Param("clinicIds")   List<UUID> clinicIds,
             Pageable pageable);
 
     /**

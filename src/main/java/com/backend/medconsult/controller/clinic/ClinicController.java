@@ -21,6 +21,10 @@ import com.backend.medconsult.dto.clinic.ClinicResponseDto;
 import com.backend.medconsult.dto.clinic.ClinicSearchRequest;
 import com.backend.medconsult.dto.clinic.ClinicSpecialtyResponseDto;
 import com.backend.medconsult.service.clinic.ClinicService;
+import com.backend.medconsult.service.clinic.ClinicAuthorizationService;
+import com.backend.medconsult.enums.usersAndPatients.UserRole;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import com.backend.medconsult.security.CustomUserPrincipal;
 
 /**
  * Public read-only endpoints for the Clinic module.
@@ -32,6 +36,9 @@ public class ClinicController {
 
     @Autowired
     private ClinicService clinicService;
+
+    @Autowired
+    private ClinicAuthorizationService clinicAuthorizationService;
 
     // ── Search / List ──────────────────────────────────────────────────
 
@@ -47,7 +54,8 @@ public class ClinicController {
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size,
             @RequestParam(name = "sortBy", defaultValue = "nameEn") String sortBy,
-            @RequestParam(name = "sortDir", defaultValue = "asc") String sortDir) {
+            @RequestParam(name = "sortDir", defaultValue = "asc") String sortDir,
+            @AuthenticationPrincipal CustomUserPrincipal principal) {
 
         ClinicSearchRequest request = new ClinicSearchRequest();
         request.setName(name);
@@ -58,6 +66,14 @@ public class ClinicController {
         request.setSortBy(sortBy);
         request.setSortDir(sortDir);
 
+        if (principal != null && principal.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            List<UUID> managedIds = clinicAuthorizationService.getManagedClinicIds(principal.getUserId());
+            if (managedIds.isEmpty()) {
+                return ResponseEntity.ok(Page.empty());
+            }
+            request.setClinicIds(managedIds);
+        }
+
         return ResponseEntity.ok(clinicService.searchClinics(request));
     }
 
@@ -66,7 +82,11 @@ public class ClinicController {
      * List all clinics (no pagination).
      */
     @GetMapping("/all")
-    public ResponseEntity<List<ClinicResponseDto>> getAllClinics() {
+    public ResponseEntity<List<ClinicResponseDto>> getAllClinics(
+            @AuthenticationPrincipal CustomUserPrincipal principal) {
+        if (principal != null && principal.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            return ResponseEntity.ok(clinicAuthorizationService.getManagedClinics(principal.getUserId()));
+        }
         return ResponseEntity.ok(clinicService.getAllClinics());
     }
 
@@ -78,7 +98,11 @@ public class ClinicController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ClinicResponseDto> getClinicById(
-            @PathVariable("id") UUID id) {
+            @PathVariable("id") UUID id,
+            @AuthenticationPrincipal CustomUserPrincipal principal) {
+        if (principal != null && principal.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyClinicAdmin(id, principal.getUserId());
+        }
         return ResponseEntity.ok(clinicService.getClinicById(id));
     }
 
@@ -88,7 +112,11 @@ public class ClinicController {
      */
     @GetMapping("/{id}/detail")
     public ResponseEntity<ClinicDetailResponse> getClinicDetail(
-            @PathVariable("id") UUID id) {
+            @PathVariable("id") UUID id,
+            @AuthenticationPrincipal CustomUserPrincipal principal) {
+        if (principal != null && principal.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyClinicAdmin(id, principal.getUserId());
+        }
         return ResponseEntity.ok(clinicService.getClinicDetail(id));
     }
 
@@ -99,7 +127,11 @@ public class ClinicController {
      */
     @GetMapping("/{id}/branches")
     public ResponseEntity<List<ClinicBranchResponseDto>> getClinicBranches(
-            @PathVariable("id") UUID id) {
+            @PathVariable("id") UUID id,
+            @AuthenticationPrincipal CustomUserPrincipal principal) {
+        if (principal != null && principal.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyClinicAdmin(id, principal.getUserId());
+        }
         return ResponseEntity.ok(clinicService.getClinicBranches(id));
     }
 
@@ -108,7 +140,11 @@ public class ClinicController {
      */
     @GetMapping("/branches/{branchId}/hours")
     public ResponseEntity<List<ClinicOperatingHourResponseDto>> getBranchHours(
-            @PathVariable("branchId") UUID branchId) {
+            @PathVariable("branchId") UUID branchId,
+            @AuthenticationPrincipal CustomUserPrincipal principal) {
+        if (principal != null && principal.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyBranchAdmin(branchId, principal.getUserId());
+        }
         return ResponseEntity.ok(clinicService.getBranchHours(branchId));
     }
 
@@ -119,7 +155,11 @@ public class ClinicController {
      */
     @GetMapping("/{id}/specialties")
     public ResponseEntity<List<ClinicSpecialtyResponseDto>> getClinicSpecialties(
-            @PathVariable("id") UUID id) {
+            @PathVariable("id") UUID id,
+            @AuthenticationPrincipal CustomUserPrincipal principal) {
+        if (principal != null && principal.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyClinicAdmin(id, principal.getUserId());
+        }
         return ResponseEntity.ok(clinicService.getClinicSpecialties(id));
     }
 
@@ -128,7 +168,11 @@ public class ClinicController {
      */
     @GetMapping("/{id}/insurance")
     public ResponseEntity<List<ClinicInsuranceResponseDto>> getClinicInsurances(
-            @PathVariable("id") UUID id) {
+            @PathVariable("id") UUID id,
+            @AuthenticationPrincipal CustomUserPrincipal principal) {
+        if (principal != null && principal.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyClinicAdmin(id, principal.getUserId());
+        }
         return ResponseEntity.ok(clinicService.getClinicInsurances(id));
     }
 
@@ -137,7 +181,11 @@ public class ClinicController {
      */
     @GetMapping("/{id}/languages")
     public ResponseEntity<List<ClinicLanguageResponseDto>> getClinicLanguages(
-            @PathVariable("id") UUID id) {
+            @PathVariable("id") UUID id,
+            @AuthenticationPrincipal CustomUserPrincipal principal) {
+        if (principal != null && principal.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+            clinicAuthorizationService.verifyClinicAdmin(id, principal.getUserId());
+        }
         return ResponseEntity.ok(clinicService.getClinicLanguages(id));
     }
 }

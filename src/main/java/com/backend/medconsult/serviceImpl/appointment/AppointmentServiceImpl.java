@@ -23,6 +23,8 @@ import com.backend.medconsult.repository.doctor.DoctorRepository;
 import com.backend.medconsult.repository.usersAndPatients.PatientRepository;
 import com.backend.medconsult.security.CustomUserPrincipal;
 import com.backend.medconsult.service.appointment.AppointmentService;
+import com.backend.medconsult.service.clinic.ClinicAuthorizationService;
+import com.backend.medconsult.enums.usersAndPatients.UserRole;
 import com.backend.medconsult.service.platformAndCompliance.AccessLogService;
 import com.backend.medconsult.service.platformAndCompliance.NotificationService;
 
@@ -62,6 +64,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         @Autowired
         private NotificationService notificationService;
+
+        @Autowired
+        private ClinicAuthorizationService clinicAuthorizationService;
 
         // ─── Book Appointment ──────────────────────────────────────────────
 
@@ -182,6 +187,10 @@ public class AppointmentServiceImpl implements AppointmentService {
                         HttpServletRequest request) {
                 Appointment appointment = findAppointmentOrThrow(appointmentId);
 
+                if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+                        clinicAuthorizationService.verifyClinicAdmin(appointment.getDoctorClinic().getClinic().getClinicId(), authUser.getUserId());
+                }
+
                 accessLogService.log(
                                 authUser.getUser(),
                                 null,
@@ -207,6 +216,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 
                 Pageable pageable = PageRequest.of(searchRequest.getPage(), searchRequest.getSize(), sort);
 
+                List<UUID> clinicIds = null;
+                if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+                        clinicIds = clinicAuthorizationService.getManagedClinicIds(authUser.getUserId());
+                        if (clinicIds.isEmpty()) {
+                                return Page.empty();
+                        }
+                }
+
                 Page<Appointment> page = appointmentRepository.search(
                                 searchRequest.getPatientId(),
                                 searchRequest.getDoctorId(),
@@ -216,6 +233,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                                 searchRequest.getSessionType(),
                                 searchRequest.getFromDate(),
                                 searchRequest.getToDate(),
+                                clinicIds,
                                 pageable);
 
                 accessLogService.log(
@@ -370,6 +388,16 @@ public class AppointmentServiceImpl implements AppointmentService {
                                 .orElseThrow(() -> new RuntimeException("Patient not found with ID: " + patientId));
 
                 Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "scheduledDate"));
+
+                if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+                        List<UUID> clinicIds = clinicAuthorizationService.getManagedClinicIds(authUser.getUserId());
+                        if (clinicIds.isEmpty()) {
+                                return Page.empty();
+                        }
+                        Page<Appointment> results = appointmentRepository.search(patientId, null, null, null, null, null, null, null, clinicIds, pageable);
+                        return results.map(AppointmentResponseDto::fromEntity);
+                }
+
                 Page<Appointment> results = appointmentRepository
                                 .findByPatient_PatientIdOrderByScheduledDateDesc(patientId, pageable);
 
@@ -393,6 +421,16 @@ public class AppointmentServiceImpl implements AppointmentService {
                         CustomUserPrincipal authUser,
                         HttpServletRequest request) {
                 Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "scheduledDate"));
+
+                if (authUser != null && authUser.getUser().getRole() == UserRole.CLINIC_ADMIN) {
+                        List<UUID> clinicIds = clinicAuthorizationService.getManagedClinicIds(authUser.getUserId());
+                        if (clinicIds.isEmpty()) {
+                                return Page.empty();
+                        }
+                        Page<Appointment> results = appointmentRepository.search(null, doctorId, null, null, null, null, null, null, clinicIds, pageable);
+                        return results.map(AppointmentResponseDto::fromEntity);
+                }
+
                 Page<Appointment> results = appointmentRepository
                                 .findByDoctorClinic_Doctor_DoctorIdOrderByScheduledDateDesc(doctorId, pageable);
 
