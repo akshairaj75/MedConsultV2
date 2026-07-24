@@ -5,22 +5,30 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.backend.medconsult.dto.clinic.ClinicBranchResponseDto;
 import com.backend.medconsult.dto.clinic.ClinicDetailResponse;
 import com.backend.medconsult.dto.clinic.ClinicInsuranceResponseDto;
 import com.backend.medconsult.dto.clinic.ClinicLanguageResponseDto;
 import com.backend.medconsult.dto.clinic.ClinicOperatingHourResponseDto;
+import com.backend.medconsult.dto.clinic.ClinicRequestDto;
 import com.backend.medconsult.dto.clinic.ClinicResponseDto;
 import com.backend.medconsult.dto.clinic.ClinicSearchRequest;
 import com.backend.medconsult.dto.clinic.ClinicSpecialtyResponseDto;
 import com.backend.medconsult.service.clinic.ClinicService;
+
+import jakarta.validation.Valid;
+
 import com.backend.medconsult.service.clinic.ClinicAuthorizationService;
 import com.backend.medconsult.enums.usersAndPatients.UserRole;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -187,5 +195,14 @@ public class ClinicController {
             clinicAuthorizationService.verifyClinicAdmin(id, principal.getUserId());
         }
         return ResponseEntity.ok(clinicService.getClinicLanguages(id));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<ClinicResponseDto> registerClinic(
+            @RequestPart("body") @Valid ClinicRequestDto dto,
+            @RequestPart(value = "logo", required = false) MultipartFile logo,
+            @AuthenticationPrincipal CustomUserPrincipal principal) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(clinicService.registerClinic(dto, logo, principal));
     }
 }

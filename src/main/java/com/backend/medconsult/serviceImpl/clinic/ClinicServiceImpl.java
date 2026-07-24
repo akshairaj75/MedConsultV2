@@ -39,6 +39,8 @@ import com.backend.medconsult.entity.references.InsuranceProvider;
 import com.backend.medconsult.entity.references.Language;
 import com.backend.medconsult.entity.references.Locality;
 import com.backend.medconsult.entity.references.Specialty;
+import com.backend.medconsult.entity.usersAndPatients.User;
+import com.backend.medconsult.enums.usersAndPatients.UserRole;
 import com.backend.medconsult.repository.clinic.ClinicBranchRepository;
 import com.backend.medconsult.repository.clinic.ClinicInsuranceRepository;
 import com.backend.medconsult.repository.clinic.ClinicLanguageRepository;
@@ -50,6 +52,7 @@ import com.backend.medconsult.repository.references.InsuranceProviderRepository;
 import com.backend.medconsult.repository.references.LanguageRepository;
 import com.backend.medconsult.repository.references.LocalityRepository;
 import com.backend.medconsult.repository.references.SpecialtyRepository;
+import com.backend.medconsult.repository.usersAndPatients.UserRepository;
 import com.backend.medconsult.security.CustomUserPrincipal;
 import com.backend.medconsult.service.FileStorageService;
 import com.backend.medconsult.service.clinic.ClinicService;
@@ -57,20 +60,24 @@ import com.backend.medconsult.service.clinic.ClinicService;
 /**
  * Production-quality implementation of {@link ClinicService}.
  *
- * <p>Design principles:
+ * <p>
+ * Design principles:
  * <ul>
- *   <li>All writes are wrapped in {@code @Transactional} to ensure atomicity.</li>
- *   <li>Duplicate sub-resources are rejected before persisting (existence check).</li>
- *   <li>Soft-delete on {@code Clinic} is handled by Hibernate {@code @SQLDelete}.</li>
- *   <li>No Lombok — explicit getters/setters throughout the domain layer.</li>
+ * <li>All writes are wrapped in {@code @Transactional} to ensure
+ * atomicity.</li>
+ * <li>Duplicate sub-resources are rejected before persisting (existence
+ * check).</li>
+ * <li>Soft-delete on {@code Clinic} is handled by Hibernate
+ * {@code @SQLDelete}.</li>
+ * <li>No Lombok — explicit getters/setters throughout the domain layer.</li>
  * </ul>
  */
 @Service
 public class ClinicServiceImpl implements ClinicService {
 
     // ── Allowed sort-by fields (prevents JPQL injection) ──────────────
-    private static final Set<String> ALLOWED_SORT_FIELDS =
-            Set.of("nameEn", "nameAr", "overallRating", "reviewCount", "createdAt");
+    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("nameEn", "nameAr", "overallRating", "reviewCount",
+            "createdAt");
 
     // ── Repositories ──────────────────────────────────────────────────
 
@@ -94,6 +101,9 @@ public class ClinicServiceImpl implements ClinicService {
 
     @Autowired
     private ClinicLanguageRepository clinicLanguageRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     // ── Reference Repositories ────────────────────────────────────────
 
@@ -124,9 +134,11 @@ public class ClinicServiceImpl implements ClinicService {
     @Override
     public Page<ClinicResponseDto> searchClinics(ClinicSearchRequest request) {
         String sortField = ALLOWED_SORT_FIELDS.contains(request.getSortBy())
-                ? request.getSortBy() : "nameEn";
+                ? request.getSortBy()
+                : "nameEn";
         Sort.Direction direction = "desc".equalsIgnoreCase(request.getSortDir())
-                ? Sort.Direction.DESC : Sort.Direction.ASC;
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize(),
                 Sort.by(direction, sortField));
 
@@ -135,8 +147,7 @@ public class ClinicServiceImpl implements ClinicService {
                 request.getSpecialtyId(),
                 request.getIsActive(),
                 request.getClinicIds(),
-                pageable
-        ).map(ClinicResponseDto::fromEntity);
+                pageable).map(ClinicResponseDto::fromEntity);
     }
 
     @Override
@@ -197,7 +208,8 @@ public class ClinicServiceImpl implements ClinicService {
 
         Clinic saved = clinicRepository.save(clinic);
 
-        if (principal != null && principal.getUser().getRole() == com.backend.medconsult.enums.usersAndPatients.UserRole.CLINIC_ADMIN) {
+        if (principal != null && principal.getUser()
+                .getRole() == com.backend.medconsult.enums.usersAndPatients.UserRole.CLINIC_ADMIN) {
             ClinicAdmin ca = new ClinicAdmin();
             ca.setClinic(saved);
             ca.setUser(principal.getUser());
@@ -207,6 +219,41 @@ public class ClinicServiceImpl implements ClinicService {
 
         return ClinicResponseDto.fromEntity(saved);
     }
+
+    @Transactional
+    @Override
+    public ClinicResponseDto registerClinic(ClinicRequestDto dto, MultipartFile logo,
+            CustomUserPrincipal principal) {
+
+        if (clinicRepository.existsByMohLicenseNumber(dto.getMohLicenseNumber())) {
+            throw new IllegalArgumentException(
+                    "A clinic with MOH license '" + dto.getMohLicenseNumber() + "' already exists.");
+        }
+
+        Clinic clinic = new Clinic();
+        applyDtoToClinic(clinic, dto);
+
+        if (logo != null && !logo.isEmpty()) {
+            clinic.setLogoUrl(storeLogoOrThrow(logo));
+        }
+
+        Clinic saved = clinicRepository.save(clinic);
+
+        if (principal != null) {
+            User user = principal.getUser();
+            user.setRole(UserRole.CLINIC_ADMIN);
+            userRepository.save(user);
+
+            ClinicAdmin ca = new ClinicAdmin();
+            ca.setClinic(saved);
+            ca.setUser(user);
+            ca.setIsPrimary(true);
+            clinicAdminRepository.save(ca);
+        }
+
+        return ClinicResponseDto.fromEntity(saved);
+    }
+
 
     @Transactional
     @Override
@@ -258,7 +305,7 @@ public class ClinicServiceImpl implements ClinicService {
             CustomUserPrincipal principal) {
 
         Clinic clinic = clinicRepository.findById(clinicId)
-        .orElseThrow(() -> new RuntimeException("Clinic not found: " + clinicId));
+                .orElseThrow(() -> new RuntimeException("Clinic not found: " + clinicId));
 
         Locality locality = localityRepository.findById(dto.getLocalityId())
                 .orElseThrow(() -> new RuntimeException("Locality not found: " + dto.getLocalityId()));
@@ -290,17 +337,28 @@ public class ClinicServiceImpl implements ClinicService {
                     .orElseThrow(() -> new RuntimeException("City not found: " + dto.getCityId())));
         }
 
-        if (dto.getBranchNameEn() != null) branch.setBranchNameEn(dto.getBranchNameEn());
-        if (dto.getBranchNameAr() != null) branch.setBranchNameAr(dto.getBranchNameAr());
-        if (dto.getAddressLine1() != null) branch.setAddressLine1(dto.getAddressLine1());
-        if (dto.getAddressLine2() != null) branch.setAddressLine2(dto.getAddressLine2());
-        if (dto.getPostalCode() != null) branch.setPostalCode(dto.getPostalCode());
-        if (dto.getLatitude() != null) branch.setLatitude(dto.getLatitude());
-        if (dto.getLongitude() != null) branch.setLongitude(dto.getLongitude());
-        if (dto.getMapsUrl() != null) branch.setMapsUrl(dto.getMapsUrl());
-        if (dto.getPhone() != null) branch.setPhone(dto.getPhone());
-        if (dto.getIsPrimary() != null) branch.setIsPrimary(dto.getIsPrimary());
-        if (dto.getIsActive() != null) branch.setIsActive(dto.getIsActive());
+        if (dto.getBranchNameEn() != null)
+            branch.setBranchNameEn(dto.getBranchNameEn());
+        if (dto.getBranchNameAr() != null)
+            branch.setBranchNameAr(dto.getBranchNameAr());
+        if (dto.getAddressLine1() != null)
+            branch.setAddressLine1(dto.getAddressLine1());
+        if (dto.getAddressLine2() != null)
+            branch.setAddressLine2(dto.getAddressLine2());
+        if (dto.getPostalCode() != null)
+            branch.setPostalCode(dto.getPostalCode());
+        if (dto.getLatitude() != null)
+            branch.setLatitude(dto.getLatitude());
+        if (dto.getLongitude() != null)
+            branch.setLongitude(dto.getLongitude());
+        if (dto.getMapsUrl() != null)
+            branch.setMapsUrl(dto.getMapsUrl());
+        if (dto.getPhone() != null)
+            branch.setPhone(dto.getPhone());
+        if (dto.getIsPrimary() != null)
+            branch.setIsPrimary(dto.getIsPrimary());
+        if (dto.getIsActive() != null)
+            branch.setIsActive(dto.getIsActive());
 
         return ClinicBranchResponseDto.fromEntity(clinicBranchRepository.save(branch));
     }
@@ -434,7 +492,8 @@ public class ClinicServiceImpl implements ClinicService {
         insurance.setProvider(provider);
         if (dto != null) {
             insurance.setNetworkClass(dto.getNetworkClass());
-            if (dto.getIsActive() != null) insurance.setIsActive(dto.getIsActive());
+            if (dto.getIsActive() != null)
+                insurance.setIsActive(dto.getIsActive());
         }
 
         return ClinicInsuranceResponseDto.fromEntity(insuranceRepository.save(insurance));
@@ -510,27 +569,42 @@ public class ClinicServiceImpl implements ClinicService {
         clinic.setPhonePrimary(dto.getPhonePrimary());
         clinic.setPhoneSecondary(dto.getPhoneSecondary());
         clinic.setMohLicenseNumber(dto.getMohLicenseNumber());
-        if (dto.getMohVerified() != null) clinic.setMohVerified(dto.getMohVerified());
+        if (dto.getMohVerified() != null)
+            clinic.setMohVerified(dto.getMohVerified());
         clinic.setMohVerifiedAt(dto.getMohVerifiedAt());
         clinic.setNaphiesFacilityId(dto.getNaphiesFacilityId());
-        if (dto.getIsActive() != null) clinic.setIsActive(dto.getIsActive());
+        if (dto.getIsActive() != null)
+            clinic.setIsActive(dto.getIsActive());
     }
 
     /** Partial mapping used on update (null fields are skipped). */
     private void applyPartialDtoToClinic(Clinic clinic, ClinicRequestDto dto) {
-        if (dto.getNameEn() != null) clinic.setNameEn(dto.getNameEn());
-        if (dto.getNameAr() != null) clinic.setNameAr(dto.getNameAr());
-        if (dto.getDescriptionEn() != null) clinic.setDescriptionEn(dto.getDescriptionEn());
-        if (dto.getDescriptionAr() != null) clinic.setDescriptionAr(dto.getDescriptionAr());
-        if (dto.getWebsite() != null) clinic.setWebsite(dto.getWebsite());
-        if (dto.getEmail() != null) clinic.setEmail(dto.getEmail());
-        if (dto.getPhonePrimary() != null) clinic.setPhonePrimary(dto.getPhonePrimary());
-        if (dto.getPhoneSecondary() != null) clinic.setPhoneSecondary(dto.getPhoneSecondary());
-        if (dto.getMohLicenseNumber() != null) clinic.setMohLicenseNumber(dto.getMohLicenseNumber());
-        if (dto.getMohVerified() != null) clinic.setMohVerified(dto.getMohVerified());
-        if (dto.getMohVerifiedAt() != null) clinic.setMohVerifiedAt(dto.getMohVerifiedAt());
-        if (dto.getNaphiesFacilityId() != null) clinic.setNaphiesFacilityId(dto.getNaphiesFacilityId());
-        if (dto.getIsActive() != null) clinic.setIsActive(dto.getIsActive());
+        if (dto.getNameEn() != null)
+            clinic.setNameEn(dto.getNameEn());
+        if (dto.getNameAr() != null)
+            clinic.setNameAr(dto.getNameAr());
+        if (dto.getDescriptionEn() != null)
+            clinic.setDescriptionEn(dto.getDescriptionEn());
+        if (dto.getDescriptionAr() != null)
+            clinic.setDescriptionAr(dto.getDescriptionAr());
+        if (dto.getWebsite() != null)
+            clinic.setWebsite(dto.getWebsite());
+        if (dto.getEmail() != null)
+            clinic.setEmail(dto.getEmail());
+        if (dto.getPhonePrimary() != null)
+            clinic.setPhonePrimary(dto.getPhonePrimary());
+        if (dto.getPhoneSecondary() != null)
+            clinic.setPhoneSecondary(dto.getPhoneSecondary());
+        if (dto.getMohLicenseNumber() != null)
+            clinic.setMohLicenseNumber(dto.getMohLicenseNumber());
+        if (dto.getMohVerified() != null)
+            clinic.setMohVerified(dto.getMohVerified());
+        if (dto.getMohVerifiedAt() != null)
+            clinic.setMohVerifiedAt(dto.getMohVerifiedAt());
+        if (dto.getNaphiesFacilityId() != null)
+            clinic.setNaphiesFacilityId(dto.getNaphiesFacilityId());
+        if (dto.getIsActive() != null)
+            clinic.setIsActive(dto.getIsActive());
     }
 
     private void applyDtoToBranch(ClinicBranch branch, ClinicBranchRequestDto dto,
