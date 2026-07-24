@@ -1,7 +1,6 @@
 package com.backend.medconsult.serviceImpl.clinic;
 
 import com.backend.medconsult.dto.clinic.ClinicResponseDto;
-import com.backend.medconsult.entity.clinic.Clinic;
 import com.backend.medconsult.entity.clinic.ClinicBranch;
 import com.backend.medconsult.entity.doctor.AppointmentSlot;
 import com.backend.medconsult.entity.doctor.DoctorClinic;

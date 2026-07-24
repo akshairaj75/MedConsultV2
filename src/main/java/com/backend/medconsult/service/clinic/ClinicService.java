@@ -3,7 +3,6 @@ package com.backend.medconsult.service.clinic;
 import java.util.List;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,7 +20,6 @@ import com.backend.medconsult.dto.clinic.ClinicSearchRequest;
 import com.backend.medconsult.dto.clinic.ClinicSpecialtyResponseDto;
 import com.backend.medconsult.security.CustomUserPrincipal;
 
-import jakarta.validation.Valid;
 
 public interface ClinicService {
 
