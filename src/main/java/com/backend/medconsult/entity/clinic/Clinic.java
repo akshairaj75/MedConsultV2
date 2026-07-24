@@ -6,6 +6,8 @@ import org.hibernate.annotations.SQLRestriction;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.List;
+import java.util.ArrayList;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
@@ -89,6 +91,9 @@ public class Clinic {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    @OneToMany(mappedBy = "clinic", fetch = FetchType.LAZY)
+    private List<ClinicAdmin> admins = new ArrayList<>();
 
     @PreUpdate
     protected void onUpdate() {
@@ -256,5 +261,13 @@ public class Clinic {
 
     public void setDeletedAt(LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
+    }
+
+    public List<ClinicAdmin> getAdmins() {
+        return admins;
+    }
+
+    public void setAdmins(List<ClinicAdmin> admins) {
+        this.admins = admins;
     }
 }

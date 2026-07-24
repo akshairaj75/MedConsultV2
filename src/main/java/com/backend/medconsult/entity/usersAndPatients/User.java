@@ -7,6 +7,9 @@ import com.backend.medconsult.enums.usersAndPatients.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.List;
+import java.util.ArrayList;
+import com.backend.medconsult.entity.clinic.ClinicAdmin;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
@@ -87,6 +90,9 @@ public class User {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<ClinicAdmin> clinicAdmins = new ArrayList<>();
 
     @PreUpdate
     protected void onUpdate() {
@@ -239,5 +245,13 @@ public class User {
 
     public void setDeletedAt(LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
+    }
+
+    public List<ClinicAdmin> getClinicAdmins() {
+        return clinicAdmins;
+    }
+
+    public void setClinicAdmins(List<ClinicAdmin> clinicAdmins) {
+        this.clinicAdmins = clinicAdmins;
     }
 }

@@ -34,7 +34,8 @@ import jakarta.servlet.http.HttpServletRequest;
  */
 @RestControllerAdvice(assignableTypes = {
         ClinicController.class,
-        ClinicAdminController.class
+        ClinicAdminController.class,
+        ClinicAdminAssignmentController.class
 })
 public class ClinicExceptionHandler {
 
